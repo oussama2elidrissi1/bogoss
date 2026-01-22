@@ -42,7 +42,7 @@
                     <p class="text-sm text-gray-600 mb-4">{{ $service->description }}</p>
                     <div class="flex justify-between items-center mb-4">
                         <span class="text-sm text-gray-600">⏱️ {{ $service->duration }} min</span>
-                        <span class="text-2xl font-bold text-primary">${{ $service->price }}</span>
+                        <span class="text-2xl font-bold text-primary">MAD {{ $service->price }}</span>
                     </div>
                     <div class="flex space-x-2">
                         <a href="{{ route('admin.services.edit', $service) }}" class="btn-primary flex-1 text-center text-sm">Edit</a>
@@ -67,3 +67,4 @@
     </section>
 </div>
 @endsection
+

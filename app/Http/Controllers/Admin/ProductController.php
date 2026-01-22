@@ -41,4 +41,15 @@ class ProductController extends Controller
             'stockFilter' => $stock,
         ]);
     }
+
+    public function updateStock(Request $request, Product $product)
+    {
+        $validated = $request->validate([
+            'in_stock' => 'required|boolean',
+        ]);
+
+        $product->update(['in_stock' => (bool) $validated['in_stock']]);
+
+        return redirect()->route('admin.products.index')->with('success', 'Product stock updated.');
+    }
 }

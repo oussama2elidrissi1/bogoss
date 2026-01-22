@@ -19,6 +19,7 @@ use App\Http\Controllers\Pages\ServicesController;
 use App\Http\Controllers\Pages\BookingController;
 use App\Http\Controllers\Pages\ShopController;
 use App\Http\Controllers\Pages\SubscriptionController;
+use App\Http\Controllers\Pages\PacksController;
 
 Route::get('/locale/{locale}', function (string $locale) {
     if (!in_array($locale, ['fr', 'en', 'ar'], true)) {
@@ -34,6 +35,7 @@ Route::get('/locale/{locale}', function (string $locale) {
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/services', [ServicesController::class, 'index'])->name('services');
+Route::get('/packs', [PacksController::class, 'index'])->name('packs');
 Route::get('/booking', [BookingController::class, 'index'])->name('booking');
 Route::post('/booking', [BookingController::class, 'store'])->middleware('auth')->name('booking.store');
 Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions');
@@ -41,6 +43,7 @@ Route::post('/subscriptions/{subscription}/subscribe', [SubscriptionController::
     ->middleware('auth')
     ->name('subscriptions.subscribe');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::view('/partner', 'pages.partner')->name('partner.info');
 Route::post('/cart/add/{product}', [ShopController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{product}', [ShopController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{product}', [ShopController::class, 'remove'])->name('cart.remove');
@@ -66,8 +69,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('services', AdminServiceController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('bookings', AdminBookingController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('staff', AdminStaffController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('staff/{staff}/history', [AdminStaffController::class, 'history'])->name('staff.history');
     Route::resource('inventory', AdminInventoryController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('products', AdminProductController::class)->only(['index']);
+    Route::post('products/{product}/stock', [AdminProductController::class, 'updateStock'])->name('products.stock');
     Route::resource('promotions', AdminPromotionController::class)->only(['index']);
     Route::resource('partners', AdminPartnerController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics');

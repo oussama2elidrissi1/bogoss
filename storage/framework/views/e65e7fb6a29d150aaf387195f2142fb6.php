@@ -32,9 +32,10 @@
                         <div class="flex justify-between items-start mb-2">
                             <div>
                                 <h3 class="font-serif text-xl font-bold text-gray-900"><?php echo e($member->name); ?></h3>
-                                <p class="text-sm text-gray-600"><?php echo e($member->role); ?></p>
+                                <p class="text-sm text-gray-600"><?php echo e(is_array($member->role) ? implode(', ', $member->role) : $member->role); ?></p>
                             </div>
                             <div class="flex space-x-2">
+                                <a href="<?php echo e(route('admin.staff.history', $member)); ?>" class="btn-secondary text-sm">Voir situation</a>
                                 <a href="<?php echo e(route('admin.staff.edit', $member)); ?>" class="btn-primary text-sm">Edit</a>
                                 <form method="POST" action="<?php echo e(route('admin.staff.destroy', $member)); ?>" onsubmit="return confirm('Are you sure?')">
                                     <?php echo csrf_field(); ?>
@@ -77,5 +78,6 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/staff.blade.php ENDPATH**/ ?>

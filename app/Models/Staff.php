@@ -23,6 +23,7 @@ class Staff extends Model
     ];
 
     protected $casts = [
+        'role' => 'array',
         'specialties' => 'array',
         'availability' => 'array',
         'join_date' => 'date',

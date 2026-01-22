@@ -1,6 +1,6 @@
 <nav class="glass-card sticky top-0 z-50 shadow-lg">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
+        <div class="flex justify-between items-center h-16 gap-6">
             <a href="<?php echo e(route('home')); ?>" class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-full overflow-hidden bg-white flex items-center justify-center border border-gray-200">
                     <?php if(file_exists(public_path('images/bogos-land-logo.png'))): ?>
@@ -16,30 +16,22 @@
                 $currentRoute = request()->route() ? request()->route()->getName() : '';
                 $user = auth()->user();
                 $isAdmin = $user && $user->is_admin;
+                $isAdminRoute = str_starts_with($currentRoute, 'admin.');
                 $currentLocale = app()->getLocale();
                 $cartItemsCount = collect(session('cart', []))->sum('quantity');
             ?>
 
-            <div class="hidden md:flex items-center space-x-8">
-                <?php if($isAdmin): ?>
-                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.dashboard') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.dashboard')); ?></a>
-                    <a href="<?php echo e(route('admin.clients.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.clients') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.clients')); ?></a>
-                    <a href="<?php echo e(route('admin.bookings.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.bookings') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.bookings')); ?></a>
-                    <a href="<?php echo e(route('admin.services.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.services') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.services')); ?></a>
-                    <a href="<?php echo e(route('admin.staff.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.staff') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.staff')); ?></a>
-                    <a href="<?php echo e(route('admin.inventory.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.inventory') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.inventory')); ?></a>
-                    <a href="<?php echo e(route('admin.products.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.products') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.products')); ?></a>
-                    <a href="<?php echo e(route('admin.promotions.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.promotions') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.promotions')); ?></a>
-                    <a href="<?php echo e(route('admin.analytics')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.analytics') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.analytics')); ?></a>
-                    <a href="<?php echo e(route('admin.partners.index')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'admin.partners') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.admin.partners')); ?></a>
-                <?php elseif($user && $user->role === 'partner'): ?>
+            <div class="hidden md:flex items-center space-x-6 flex-1 justify-center">
+                <?php if($user && $user->role === 'partner'): ?>
                     <a href="<?php echo e(route('partner.dashboard')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'partner.') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.partner.dashboard')); ?></a>
                     <a href="<?php echo e(route('partner.bookings.create')); ?>" class="text-sm font-medium <?php echo e(str_starts_with($currentRoute, 'partner.bookings') ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.partner.new_booking')); ?></a>
                 <?php else: ?>
                     <a href="<?php echo e(route('home')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'home' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.home')); ?></a>
                     <a href="<?php echo e(route('services')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'services' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.services')); ?></a>
+                    <a href="<?php echo e(route('packs')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'packs' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">Packs</a>
                     <a href="<?php echo e(route('booking')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'booking' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.book_now')); ?></a>
                     <a href="<?php echo e(route('subscriptions')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'subscriptions' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.memberships')); ?></a>
+                    <a href="<?php echo e(route('partner.info')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'partner.info' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">Partenaire</a>
                     <a href="<?php echo e(route('shop')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'shop' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">
                         <?php echo e(__('app.nav.shop')); ?>
 
@@ -50,13 +42,13 @@
                 <?php endif; ?>
             </div>
 
-            <div class="hidden md:flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-3">
                 <details class="relative">
-                    <summary class="btn-secondary text-xs px-3 py-2 cursor-pointer list-none">
-                        <?php echo e(__('app.language')); ?>: <?php echo e(strtoupper($currentLocale)); ?>
+                    <summary class="btn-secondary text-xs px-2.5 py-2 cursor-pointer list-none">
+                        <?php echo e(strtoupper($currentLocale)); ?>
 
                     </summary>
-                    <div class="absolute right-0 mt-2 w-36 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
+                    <div class="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden z-50">
                         <a href="<?php echo e(route('locale.switch', 'fr')); ?>" class="block px-4 py-2 text-sm <?php echo e($currentLocale === 'fr' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">FR</a>
                         <a href="<?php echo e(route('locale.switch', 'en')); ?>" class="block px-4 py-2 text-sm <?php echo e($currentLocale === 'en' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">EN</a>
                         <a href="<?php echo e(route('locale.switch', 'ar')); ?>" class="block px-4 py-2 text-sm <?php echo e($currentLocale === 'ar' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">AR</a>
@@ -65,13 +57,23 @@
                 <?php if(auth()->guard()->check()): ?>
                     <?php
                         $currentUser = auth()->user();
+                        $dashboardRoute = $currentUser?->is_admin
+                            ? route('admin.dashboard')
+                            : ($currentUser?->role === 'partner' ? route('partner.dashboard') : route('client.dashboard'));
                     ?>
                     <?php if($currentUser): ?>
-                        <div class="flex items-center space-x-3">
-                            <span class="text-sm font-medium"><?php echo e($currentUser->name); ?></span>
+                        <div class="flex items-center space-x-2">
+                            <div class="hidden lg:flex items-center space-x-2">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-semibold text-gray-600">
+                                    <?php echo e(strtoupper(substr($currentUser->name ?? 'U', 0, 1))); ?>
+
+                                </div>
+                                <span class="text-sm font-medium text-gray-700"><?php echo e($currentUser->name); ?></span>
+                            </div>
+                            <a href="<?php echo e($dashboardRoute); ?>" class="btn-secondary px-3 py-2 text-sm">Dashboard</a>
                             <form method="POST" action="<?php echo e(route('logout')); ?>">
                                 <?php echo csrf_field(); ?>
-                                <button type="submit" class="btn-primary"><?php echo e(__('app.auth.logout')); ?></button>
+                                <button type="submit" class="btn-primary px-3 py-2 text-sm"><?php echo e(__('app.auth.logout')); ?></button>
                             </form>
                         </div>
                     <?php endif; ?>
@@ -95,25 +97,16 @@
 
         <div id="mobile-menu" class="md:hidden hidden border-t border-gray-200 bg-white">
             <div class="px-4 py-4 space-y-3">
-                <?php if($isAdmin): ?>
-                    <a href="<?php echo e(route('admin.dashboard')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.dashboard') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.dashboard')); ?></a>
-                    <a href="<?php echo e(route('admin.clients.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.clients') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.clients')); ?></a>
-                    <a href="<?php echo e(route('admin.bookings.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.bookings') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.bookings')); ?></a>
-                    <a href="<?php echo e(route('admin.services.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.services') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.services')); ?></a>
-                    <a href="<?php echo e(route('admin.staff.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.staff') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.staff')); ?></a>
-                    <a href="<?php echo e(route('admin.inventory.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.inventory') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.inventory')); ?></a>
-                    <a href="<?php echo e(route('admin.products.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.products') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.products')); ?></a>
-                    <a href="<?php echo e(route('admin.promotions.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.promotions') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.promotions')); ?></a>
-                    <a href="<?php echo e(route('admin.analytics')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.analytics') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.analytics')); ?></a>
-                    <a href="<?php echo e(route('admin.partners.index')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'admin.partners') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.admin.partners')); ?></a>
-                <?php elseif($user && $user->role === 'partner'): ?>
+                <?php if($user && $user->role === 'partner'): ?>
                     <a href="<?php echo e(route('partner.dashboard')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'partner.') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.partner.dashboard')); ?></a>
                     <a href="<?php echo e(route('partner.bookings.create')); ?>" class="block px-4 py-2 rounded-lg <?php echo e(str_starts_with($currentRoute, 'partner.bookings') ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.partner.new_booking')); ?></a>
                 <?php else: ?>
                     <a href="<?php echo e(route('home')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'home' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.home')); ?></a>
                     <a href="<?php echo e(route('services')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'services' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.services')); ?></a>
+                    <a href="<?php echo e(route('packs')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'packs' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">Packs</a>
                     <a href="<?php echo e(route('booking')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'booking' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.book_now')); ?></a>
                     <a href="<?php echo e(route('subscriptions')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'subscriptions' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.memberships')); ?></a>
+                    <a href="<?php echo e(route('partner.info')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'partner.info' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">Partenaire</a>
                     <a href="<?php echo e(route('shop')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'shop' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">
                         <?php echo e(__('app.nav.shop')); ?>
 
@@ -131,11 +124,17 @@
                         <a href="<?php echo e(route('locale.switch', 'ar')); ?>" class="px-3 py-1 rounded-full text-xs border <?php echo e($currentLocale === 'ar' ? 'bg-primary text-white border-primary' : 'text-gray-700 border-gray-200'); ?>">AR</a>
                     </div>
                     <?php if(auth()->guard()->check()): ?>
-                        <div class="flex items-center justify-between">
+                        <?php
+                            $dashboardRoute = $user?->is_admin
+                                ? route('admin.dashboard')
+                                : ($user?->role === 'partner' ? route('partner.dashboard') : route('client.dashboard'));
+                        ?>
+                        <div class="flex flex-col gap-2">
                             <span class="text-sm font-medium"><?php echo e($user->name); ?></span>
+                            <a href="<?php echo e($dashboardRoute); ?>" class="btn-secondary text-center">Dashboard</a>
                             <form method="POST" action="<?php echo e(route('logout')); ?>">
                                 <?php echo csrf_field(); ?>
-                                <button type="submit" class="btn-primary"><?php echo e(__('app.auth.logout')); ?></button>
+                                <button type="submit" class="btn-primary w-full"><?php echo e(__('app.auth.logout')); ?></button>
                             </form>
                         </div>
                     <?php else: ?>
@@ -158,4 +157,5 @@
     });
   })();
 </script>
+
 <?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/components/navbar.blade.php ENDPATH**/ ?>

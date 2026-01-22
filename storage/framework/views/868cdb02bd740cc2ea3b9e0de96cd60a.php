@@ -9,14 +9,28 @@
 </head>
 <body class="min-h-screen">
     <?php echo $__env->make('components.navbar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-    
-    <main>
-        <?php echo $__env->yieldContent('content'); ?>
-    </main>
-    
+
+    <?php
+        $isAdminRoute = request()->routeIs('admin.*');
+    ?>
+
+    <?php if($isAdminRoute): ?>
+        <div class="flex min-h-screen">
+            <?php echo $__env->make('components.admin-sidebar', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+            <main class="flex-1">
+                <?php echo $__env->yieldContent('content'); ?>
+            </main>
+        </div>
+    <?php else: ?>
+        <main>
+            <?php echo $__env->yieldContent('content'); ?>
+        </main>
+    <?php endif; ?>
+
     <?php echo $__env->make('components.footer', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
-    
+
     <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html>
+
 <?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/layouts/app.blade.php ENDPATH**/ ?>

@@ -64,7 +64,7 @@
                 <div class="space-y-2 text-sm mb-4">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Unit Price</span>
-                        <span class="font-medium">$<?php echo e($item->price); ?></span>
+                        <span class="font-medium">MAD <?php echo e($item->price); ?></span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-600">Supplier</span>
@@ -94,5 +94,6 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/inventory.blade.php ENDPATH**/ ?>

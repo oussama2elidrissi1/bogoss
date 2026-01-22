@@ -50,7 +50,7 @@
                         <p class="text-xs text-gray-600">Visits</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-2xl font-bold text-secondary">$<?php echo e($client->total_spent); ?></p>
+                        <p class="text-2xl font-bold text-secondary">MAD <?php echo e($client->total_spent); ?></p>
                         <p class="text-xs text-gray-600">Spent</p>
                     </div>
                     <div class="text-center">
@@ -73,5 +73,6 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/clients.blade.php ENDPATH**/ ?>

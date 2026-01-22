@@ -62,7 +62,7 @@
                 <div class="space-y-2 text-sm mb-4">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Unit Price</span>
-                        <span class="font-medium">${{ $item->price }}</span>
+                        <span class="font-medium">MAD {{ $item->price }}</span>
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-600">Supplier</span>
@@ -91,3 +91,4 @@
     </section>
 </div>
 @endsection
+

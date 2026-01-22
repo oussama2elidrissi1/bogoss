@@ -43,7 +43,7 @@
                     <p class="text-sm text-gray-600 mb-4"><?php echo e($service->description); ?></p>
                     <div class="flex justify-between items-center mb-4">
                         <span class="text-sm text-gray-600">⏱️ <?php echo e($service->duration); ?> min</span>
-                        <span class="text-2xl font-bold text-primary">$<?php echo e($service->price); ?></span>
+                        <span class="text-2xl font-bold text-primary">MAD <?php echo e($service->price); ?></span>
                     </div>
                     <div class="flex space-x-2">
                         <a href="<?php echo e(route('admin.services.edit', $service)); ?>" class="btn-primary flex-1 text-center text-sm">Edit</a>
@@ -69,5 +69,6 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/services.blade.php ENDPATH**/ ?>

@@ -1,12 +1,12 @@
-<?php $__env->startSection('title', 'Wellness Shop - Bogos Land Wellness'); ?>
+<?php $__env->startSection('title', 'Boutique Homme - Bogos Land'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
     <section class="gradient-wellness py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center text-white">
-                <h1 class="font-serif text-5xl font-bold mb-4">Wellness Shop</h1>
-                <p class="text-xl max-w-2xl mx-auto">Premium wellness and beauty products for your home care routine</p>
+                <h1 class="font-serif text-5xl font-bold mb-4">Boutique Homme</h1>
+                <p class="text-xl max-w-2xl mx-auto">Produits grooming et soins dédiés aux hommes</p>
             </div>
         </div>
     </section>
@@ -25,7 +25,7 @@
                     <input
                         type="text"
                         name="q"
-                        placeholder="Search products..."
+                        placeholder="Rechercher un produit..."
                         value="<?php echo e($searchQuery); ?>"
                         class="input-field pl-10 w-full"
                     />
@@ -35,7 +35,7 @@
             </form>
             <a href="#cart" class="btn-primary relative flex items-center space-x-2">
                 <span>🛒</span>
-                <span>Cart</span>
+                <span>Panier</span>
                 <?php if($cartItemsCount > 0): ?>
                     <span class="absolute -top-2 -right-2 bg-accent text-white text-xs rounded-full w-6 h-6 flex items-center justify-center font-bold"><?php echo e($cartItemsCount); ?></span>
                 <?php endif; ?>
@@ -43,7 +43,7 @@
         </div>
 
         <div class="flex flex-wrap gap-3 mb-8">
-            <a href="<?php echo e(route('shop', ['category' => 'All', 'q' => $searchQuery])); ?>" class="px-6 py-2 rounded-full font-medium transition-all duration-300 <?php echo e($selectedCategory === 'All' ? 'bg-primary text-white shadow-lg scale-105' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'); ?>">All</a>
+            <a href="<?php echo e(route('shop', ['category' => 'All', 'q' => $searchQuery])); ?>" class="px-6 py-2 rounded-full font-medium transition-all duration-300 <?php echo e($selectedCategory === 'All' ? 'bg-primary text-white shadow-lg scale-105' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'); ?>">Tous</a>
             <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <a href="<?php echo e(route('shop', ['category' => $category, 'q' => $searchQuery])); ?>" class="px-6 py-2 rounded-full font-medium transition-all duration-300 <?php echo e($selectedCategory === $category ? 'bg-primary text-white shadow-lg scale-105' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'); ?>"><?php echo e($category); ?></a>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
@@ -56,7 +56,7 @@
                         <img src="<?php echo e($product->image ?? 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=400'); ?>" alt="<?php echo e($product->name); ?>" class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
                         <?php if(!$product->in_stock): ?>
                             <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                                <span class="bg-red-500 text-white px-4 py-2 rounded-lg font-bold">Out of Stock</span>
+                                <span class="bg-red-500 text-white px-4 py-2 rounded-lg font-bold">Rupture</span>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -73,7 +73,7 @@
                             <span class="text-2xl font-bold text-primary">$<?php echo e($product->price); ?></span>
                             <form method="POST" action="<?php echo e(route('cart.add', $product)); ?>">
                                 <?php echo csrf_field(); ?>
-                                <button type="submit" class="btn-primary" <?php echo e($product->in_stock ? '' : 'disabled'); ?>>Add to Cart</button>
+                                <button type="submit" class="btn-primary" <?php echo e($product->in_stock ? '' : 'disabled'); ?>>Ajouter</button>
                             </form>
                         </div>
                     </div>

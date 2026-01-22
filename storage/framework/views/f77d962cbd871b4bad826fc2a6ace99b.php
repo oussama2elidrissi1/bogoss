@@ -28,7 +28,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">Service</label>
                     <select name="service_id" class="input-field" required>
                         <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($service->id); ?>" <?php echo e(old('service_id', $booking->service_id) == $service->id ? 'selected' : ''); ?>><?php echo e($service->name); ?></option>
+                            <option value="<?php echo e($service->id); ?>" data-price="<?php echo e($service->price); ?>" <?php echo e(old('service_id', $booking->service_id) == $service->id ? 'selected' : ''); ?>><?php echo e($service->name); ?></option>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
                 </div>
@@ -37,9 +37,10 @@
                     <select name="staff_id" class="input-field">
                         <option value="">Any Available</option>
                         <?php $__currentLoopData = $staff; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $member): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($member->id); ?>" <?php echo e(old('staff_id', $booking->staff_id) == $member->id ? 'selected' : ''); ?>><?php echo e($member->name); ?></option>
+                            <option value="<?php echo e($member->id); ?>" data-payouts='<?php echo json_encode($member->services->pluck("pivot.payout_percentage", "id"), 512) ?>' <?php echo e(old('staff_id', $booking->staff_id) == $member->id ? 'selected' : ''); ?>><?php echo e($member->name); ?></option>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </select>
+                    <p class="text-xs text-gray-500 mt-1" id="staff-payout-preview"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -72,5 +73,28 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+  (function () {
+    const serviceSelect = document.querySelector('select[name="service_id"]');
+    const staffSelect = document.querySelector('select[name="staff_id"]');
+    const preview = document.getElementById('staff-payout-preview');
+    if (!serviceSelect || !staffSelect || !preview) return;
+
+    const updatePreview = () => {
+      const serviceId = serviceSelect.value;
+      const staffOption = staffSelect.options[staffSelect.selectedIndex];
+      const payouts = staffOption?.dataset?.payouts ? JSON.parse(staffOption.dataset.payouts) : {};
+      const percent = payouts[serviceId] ?? 0;
+      preview.textContent = staffOption?.value ? `Staff payout: ${percent}%` : '';
+    };
+
+    serviceSelect.addEventListener('change', updatePreview);
+    staffSelect.addEventListener('change', updatePreview);
+    updatePreview();
+  })();
+</script>
+<?php $__env->stopPush(); ?>
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/bookings-edit.blade.php ENDPATH**/ ?>

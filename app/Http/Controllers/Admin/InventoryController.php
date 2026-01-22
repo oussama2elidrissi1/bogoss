@@ -18,11 +18,11 @@ class InventoryController extends Controller
     {
         $query = Inventory::query();
 
-        if ($request->has('category')) {
+        if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
-        if ($request->has('status')) {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 

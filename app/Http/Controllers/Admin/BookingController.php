@@ -64,8 +64,22 @@ class BookingController extends Controller
         $agendaPrev = $agendaStart->copy()->subDays(7)->toDateString();
         $agendaNext = $agendaStart->copy()->addDays(7)->toDateString();
 
+        $nonAgendaQuery = Booking::query()
+            ->whereNotBetween('date', [$agendaStart->toDateString(), $agendaEnd->toDateString()]);
+
+        if ($request->has('status') && $request->status !== '') {
+            $nonAgendaQuery->where('status', $request->status);
+        }
+
+        if ($request->has('date') && $request->date !== '') {
+            $nonAgendaQuery->whereDate('date', $request->date);
+        }
+
+        $nonAgendaBookings = $nonAgendaQuery->orderBy('date', 'desc')->paginate(15);
+
         return view('admin.bookings', compact(
             'bookings',
+            'nonAgendaBookings',
             'clients',
             'services',
             'staff',

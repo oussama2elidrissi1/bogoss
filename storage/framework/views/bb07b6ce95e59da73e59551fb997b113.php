@@ -1,12 +1,12 @@
-<?php $__env->startSection('title', 'Membership Plans - Bogos Land Wellness'); ?>
+<?php $__env->startSection('title', 'Abonnements Homme - Bogos Land'); ?>
 
 <?php $__env->startSection('content'); ?>
 <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
     <section class="gradient-wellness py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center text-white">
-                <h1 class="font-serif text-5xl font-bold mb-4">Membership Plans</h1>
-                <p class="text-xl max-w-2xl mx-auto">Choose the perfect plan for your wellness journey and enjoy exclusive benefits</p>
+                <h1 class="font-serif text-5xl font-bold mb-4">Abonnements Homme</h1>
+                <p class="text-xl max-w-2xl mx-auto">Choisissez la formule idéale pour votre routine homme</p>
             </div>
         </div>
     </section>
@@ -26,7 +26,7 @@
                         <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
                             <div class="bg-primary text-white px-4 py-1 rounded-full text-sm font-bold flex items-center space-x-1">
                                 <span>⭐</span>
-                                <span>Most Popular</span>
+                                <span>Le plus choisi</span>
                             </div>
                         </div>
                     <?php endif; ?>
@@ -34,7 +34,7 @@
                     <div class="text-center mb-6">
                         <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2"><?php echo e($plan->name); ?></h3>
                         <div class="flex items-baseline justify-center space-x-2">
-                            <span class="text-5xl font-bold text-primary">$<?php echo e($plan->price); ?></span>
+                            <span class="text-5xl font-bold text-primary">MAD <?php echo e($plan->price); ?></span>
                             <span class="text-gray-600">/<?php echo e($plan->duration); ?></span>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                     <form method="POST" action="<?php echo e(route('subscriptions.subscribe', $plan)); ?>">
                         <?php echo csrf_field(); ?>
                         <button type="submit" class="w-full py-3 rounded-lg font-medium transition-all duration-300 <?php echo e($plan->popular ? 'btn-primary' : 'bg-white border-2 border-primary text-primary hover:bg-primary hover:text-white'); ?>">
-                            Choose <?php echo e($plan->name); ?>
+                            Choisir <?php echo e($plan->name); ?>
 
                         </button>
                     </form>
@@ -64,38 +64,39 @@
         </div>
 
         <div class="mt-16 glass-card p-8">
-            <h2 class="font-serif text-3xl font-bold text-gray-900 mb-6 text-center">Why Choose a Membership?</h2>
+            <h2 class="font-serif text-3xl font-bold text-gray-900 mb-6 text-center">Pourquoi un abonnement ?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="text-center">
                     <div class="w-16 h-16 gradient-wellness rounded-full flex items-center justify-center mx-auto mb-4">
                         <span class="text-white text-2xl">💰</span>
                     </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Save Money</h3>
-                    <p class="text-gray-600">Enjoy significant discounts on all services and products</p>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Économisez</h3>
+                    <p class="text-gray-600">Réductions sur tous les services et produits</p>
                 </div>
                 <div class="text-center">
                     <div class="w-16 h-16 gradient-wellness rounded-full flex items-center justify-center mx-auto mb-4">
                         <span class="text-white text-2xl">⭐</span>
                     </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Priority Access</h3>
-                    <p class="text-gray-600">Book your preferred time slots before non-members</p>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Accès prioritaire</h3>
+                    <p class="text-gray-600">Réservez vos créneaux avant tout le monde</p>
                 </div>
                 <div class="text-center">
                     <div class="w-16 h-16 gradient-wellness rounded-full flex items-center justify-center mx-auto mb-4">
                         <span class="text-white text-2xl">🎁</span>
                     </div>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Exclusive Perks</h3>
-                    <p class="text-gray-600">Access member-only events and special birthday packages</p>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 mb-2">Avantages exclusifs</h3>
+                    <p class="text-gray-600">Événements et offres réservés aux membres</p>
                 </div>
             </div>
         </div>
 
         <div class="mt-12 text-center">
-            <p class="text-gray-600 mb-4">Not sure which plan is right for you?</p>
-            <button class="btn-outline">Contact Us for Guidance</button>
+            <p class="text-gray-600 mb-4">Vous hésitez sur la formule ?</p>
+            <button class="btn-outline">Contactez‑nous</button>
         </div>
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/pages/subscriptions.blade.php ENDPATH**/ ?>

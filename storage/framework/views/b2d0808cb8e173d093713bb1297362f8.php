@@ -17,7 +17,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Total Revenue</p>
-                        <p class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($totalRevenue, 2)); ?></p>
+                        <p class="text-2xl font-bold text-gray-900">MAD <?php echo e(number_format($totalRevenue, 2)); ?></p>
                     </div>
                     <div class="bg-green-50 p-3 rounded-lg">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@
                     <div class="flex items-center space-x-4 text-sm text-gray-600">
                         <span>📅 <?php echo e($booking->date->format('M d, Y')); ?></span>
                         <span>🕐 <?php echo e($booking->time); ?></span>
-                        <span>💰 $<?php echo e($booking->price); ?></span>
+                        <span>💰 MAD <?php echo e($booking->price); ?></span>
                     </div>
                 </div>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -99,5 +99,6 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/dashboard.blade.php ENDPATH**/ ?>

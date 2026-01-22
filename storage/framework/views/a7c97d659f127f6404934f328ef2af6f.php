@@ -17,7 +17,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Total Revenue</p>
-                        <p class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($totalRevenue, 2)); ?></p>
+                        <p class="text-2xl font-bold text-gray-900">MAD <?php echo e(number_format($totalRevenue, 2)); ?></p>
                     </div>
                     <div class="bg-green-50 p-3 rounded-lg">💰</div>
                 </div>
@@ -53,7 +53,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Average Booking</p>
-                        <p class="text-2xl font-bold text-gray-900">$<?php echo e(number_format($averageBookingValue, 2)); ?></p>
+                        <p class="text-2xl font-bold text-gray-900">MAD <?php echo e(number_format($averageBookingValue, 2)); ?></p>
                     </div>
                     <div class="bg-indigo-50 p-3 rounded-lg">📈</div>
                 </div>
@@ -79,7 +79,7 @@
                                 <p class="font-medium text-gray-900"><?php echo e($booking->service); ?></p>
                                 <p class="text-sm text-gray-600"><?php echo e($booking->client_name); ?></p>
                             </div>
-                            <div class="text-sm text-gray-600">$<?php echo e($booking->price); ?></div>
+                            <div class="text-sm text-gray-600">MAD <?php echo e($booking->price); ?></div>
                         </div>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <p class="text-gray-500 text-center py-8">No recent bookings</p>
@@ -109,5 +109,6 @@
     </section>
 </div>
 <?php $__env->stopSection(); ?>
+
 
 <?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\Users\oussa\Desktop\bogoss\resources\views/admin/analytics.blade.php ENDPATH**/ ?>

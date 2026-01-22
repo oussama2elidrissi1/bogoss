@@ -50,7 +50,7 @@
                         <p class="text-xs text-gray-600">Visits</p>
                     </div>
                     <div class="text-center">
-                        <p class="text-2xl font-bold text-secondary">${{ $client->total_spent }}</p>
+                        <p class="text-2xl font-bold text-secondary">MAD {{ $client->total_spent }}</p>
                         <p class="text-xs text-gray-600">Spent</p>
                     </div>
                     <div class="text-center">
@@ -72,3 +72,4 @@
     </section>
 </div>
 @endsection
+

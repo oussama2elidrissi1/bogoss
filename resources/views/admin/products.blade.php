@@ -14,6 +14,11 @@
     </section>
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        @if(session('success'))
+            <div class="glass-card p-4 mb-6 text-green-700 bg-green-50">
+                {{ session('success') }}
+            </div>
+        @endif
         <form method="GET" class="mb-6">
             <div class="flex flex-col md:flex-row gap-4">
                 <div class="relative flex-1">
@@ -57,11 +62,26 @@
                         </div>
                         <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ $product->description }}</p>
                         <div class="flex items-center justify-between mb-4">
-                            <span class="text-primary font-bold">${{ $product->price }}</span>
+                            <span class="text-primary font-bold">MAD {{ $product->price }}</span>
                         </div>
                         <div class="flex space-x-2">
-                            <button class="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium">Edit</button>
-                            <button class="px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition-colors text-sm">Delete</button>
+                            @if(!$product->in_stock)
+                                <form method="POST" action="{{ route('admin.products.stock', $product) }}" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="in_stock" value="1">
+                                    <button type="submit" class="w-full px-4 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-lg transition-colors text-sm font-medium">
+                                        Ajouter au stock
+                                    </button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('admin.products.stock', $product) }}" class="flex-1">
+                                    @csrf
+                                    <input type="hidden" name="in_stock" value="0">
+                                    <button type="submit" class="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm font-medium">
+                                        Marquer hors stock
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -76,3 +96,4 @@
     </section>
 </div>
 @endsection
+

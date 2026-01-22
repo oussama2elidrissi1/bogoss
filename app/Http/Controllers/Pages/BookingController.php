@@ -63,14 +63,28 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'service_id' => ['required', 'exists:services,id'],
+            'service_id' => ['nullable', 'exists:services,id'],
+            'service_ids' => ['nullable', 'array'],
+            'service_ids.*' => ['exists:services,id'],
             'date' => ['required', 'date', 'after_or_equal:today'],
             'time' => ['required'],
             'staff_id' => ['nullable', 'exists:staff,id'],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $service = Service::findOrFail($request->service_id);
+        $serviceIds = $request->input('service_ids', []);
+        if (empty($serviceIds) && $request->filled('service_id')) {
+            $serviceIds = [$request->service_id];
+        }
+        if (empty($serviceIds)) {
+            return back()->withErrors(['service_ids' => 'Please select at least one service.']);
+        }
+
+        $services = Service::whereIn('id', $serviceIds)->get();
+        if ($services->count() !== count($serviceIds)) {
+            return back()->withErrors(['service_ids' => 'Some selected services are invalid.']);
+        }
+
         $staff = $request->staff_id ? Staff::find($request->staff_id) : null;
         $user = Auth::user();
         $client = Client::firstOrCreate(
@@ -82,36 +96,37 @@ class BookingController extends Controller
             ]
         );
 
-        $staffPayoutPercent = 0;
-        $staffPayoutAmount = 0;
-        if ($staff) {
-            $staffPayoutPercent = $service->staff()
-                ->where('staff_id', $staff->id)
-                ->first()
-                ?->pivot
-                ?->payout_percentage ?? 0;
-            $staffPayoutAmount = round(($service->price * $staffPayoutPercent) / 100, 2);
+        foreach ($services as $service) {
+            $staffPayoutPercent = 0;
+            $staffPayoutAmount = 0;
+            if ($staff) {
+                $staffPayoutPercent = $service->staff()
+                    ->where('staff_id', $staff->id)
+                    ->first()
+                    ?->pivot
+                    ?->payout_percentage ?? 0;
+                $staffPayoutAmount = round(($service->price * $staffPayoutPercent) / 100, 2);
+            }
+
+            Booking::create([
+                'client_id' => $client->id,
+                'client_name' => $client->name,
+                'service_id' => $service->id,
+                'service' => $service->name,
+                'staff_id' => $staff?->id,
+                'staff_name' => $staff?->name,
+                'date' => $request->date,
+                'time' => $request->time,
+                'duration' => $service->duration,
+                'price' => $service->price,
+                'status' => 'pending',
+                'notes' => $request->notes,
+                'staff_payout_percentage' => $staffPayoutPercent,
+                'staff_payout_amount' => $staffPayoutAmount,
+            ]);
         }
 
-        Booking::create([
-            'client_id' => $client->id,
-            'client_name' => $client->name,
-            'service_id' => $service->id,
-            'service' => $service->name,
-            'staff_id' => $staff?->id,
-            'staff_name' => $staff?->name,
-            'date' => $request->date,
-            'time' => $request->time,
-            'duration' => $service->duration,
-            'price' => $service->price,
-            'status' => 'pending',
-            'notes' => $request->notes,
-            'staff_payout_percentage' => $staffPayoutPercent,
-            'staff_payout_amount' => $staffPayoutAmount,
-        ]);
-
         return redirect()->route('booking', [
-            'service_id' => $service->id,
             'date' => $request->date,
         ])->with('success', 'Booking request submitted successfully.');
     }

@@ -9,13 +9,27 @@
 </head>
 <body class="min-h-screen">
     @include('components.navbar')
-    
-    <main>
-        @yield('content')
-    </main>
-    
+
+    @php
+        $isAdminRoute = request()->routeIs('admin.*');
+    @endphp
+
+    @if($isAdminRoute)
+        <div class="flex min-h-screen">
+            @include('components.admin-sidebar')
+            <main class="flex-1">
+                @yield('content')
+            </main>
+        </div>
+    @else
+        <main>
+            @yield('content')
+        </main>
+    @endif
+
     @include('components.footer')
-    
+
     @stack('scripts')
 </body>
 </html>
+

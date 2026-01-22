@@ -11,19 +11,19 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#4A90A4",
-          light: "#6BA8BA",
-          dark: "#3A7284",
+          DEFAULT: "#0F172A",
+          light: "#111827",
+          dark: "#0B0F19",
         },
         secondary: {
-          DEFAULT: "#7FA99B",
-          light: "#9FBFB3",
-          dark: "#6A8A7E",
+          DEFAULT: "#1F2937",
+          light: "#374151",
+          dark: "#0F172A",
         },
         accent: {
-          DEFAULT: "#D4A574",
-          light: "#E0B98A",
-          dark: "#B8895E",
+          DEFAULT: "#475569",
+          light: "#64748B",
+          dark: "#334155",
         },
         success: "#4CAF50",
         danger: "#F44336",

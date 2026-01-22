@@ -33,6 +33,10 @@ class AuthController extends Controller
 
         Auth::login($user);
 
+        if ($request->filled('redirect_to') && !$user->is_admin && $user->role !== 'partner') {
+            return redirect()->to($request->redirect_to);
+        }
+
         return redirect()->route($this->redirectRouteFor($user));
     }
 
@@ -58,6 +62,10 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+
+        if ($request->filled('redirect_to')) {
+            return redirect()->to($request->redirect_to);
+        }
 
         return redirect()->route($this->redirectRouteFor($user));
     }

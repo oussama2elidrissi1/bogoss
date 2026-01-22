@@ -1,22 +1,22 @@
 @extends('layouts.app')
 
-@section('title', 'Staff - Admin Dashboard')
+@section('title', __('admin.staff.title'))
 
 @section('content')
 <div class="min-h-screen bg-gradient-to-b from-white to-gray-50">
     <section class="gradient-wellness py-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 class="font-serif text-4xl font-bold mb-2 text-white">Staff Management</h1>
-            <p class="text-xl text-white/90">Manage your team</p>
+            <h1 class="font-serif text-4xl font-bold mb-2 text-white">{{ __('admin.staff.title_short') }}</h1>
+            <p class="text-xl text-white/90">{{ __('admin.staff.subtitle') }}</p>
         </div>
     </section>
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="glass-card p-6 mb-6">
             <form method="GET" action="{{ route('admin.staff.index') }}" class="flex gap-4">
-                <input type="text" name="search" placeholder="Search staff..." value="{{ request('search') }}" class="input-field flex-1">
-                <button type="submit" class="btn-primary">Search</button>
-                <a href="{{ route('admin.staff.create') }}" class="btn-secondary">Add Staff</a>
+                <input type="text" name="search" placeholder="{{ __('admin.staff.search_placeholder') }}" value="{{ request('search') }}" class="input-field flex-1">
+                <button type="submit" class="btn-primary">{{ __('pages.common.search') }}</button>
+                <a href="{{ route('admin.staff.create') }}" class="btn-secondary">{{ __('admin.staff.add') }}</a>
             </form>
         </div>
 
@@ -31,21 +31,22 @@
                         <div class="flex justify-between items-start mb-2">
                             <div>
                                 <h3 class="font-serif text-xl font-bold text-gray-900">{{ $member->name }}</h3>
-                                <p class="text-sm text-gray-600">{{ $member->role }}</p>
+                                <p class="text-sm text-gray-600">{{ is_array($member->role) ? implode(', ', $member->role) : $member->role }}</p>
                             </div>
                             <div class="flex space-x-2">
-                                <a href="{{ route('admin.staff.edit', $member) }}" class="btn-primary text-sm">Edit</a>
-                                <form method="POST" action="{{ route('admin.staff.destroy', $member) }}" onsubmit="return confirm('Are you sure?')">
+                                <a href="{{ route('admin.staff.history', $member) }}" class="btn-secondary text-sm">{{ __('admin.staff.view_situation') }}</a>
+                                <a href="{{ route('admin.staff.edit', $member) }}" class="btn-primary text-sm">{{ __('pages.common.update') }}</a>
+                                <form method="POST" action="{{ route('admin.staff.destroy', $member) }}" onsubmit="return confirm('{{ __('admin.staff.delete_confirm') }}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-secondary bg-danger text-sm">Delete</button>
+                                    <button type="submit" class="btn-secondary bg-danger text-sm">{{ __('pages.common.remove') }}</button>
                                 </form>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2 mb-2">
                             <span class="text-yellow-500">⭐</span>
                             <span class="text-sm font-bold">{{ $member->rating }}</span>
-                            <span class="text-xs text-gray-500">({{ $member->completed_services }} services)</span>
+                            <span class="text-xs text-gray-500">({{ $member->completed_services }} {{ __('admin.staff.services') }})</span>
                         </div>
                     </div>
                 </div>
@@ -54,7 +55,7 @@
                     <p>📞 {{ $member->phone }}</p>
                 </div>
                 <div class="mt-4">
-                    <p class="text-xs text-gray-600 mb-2">Specialties:</p>
+                    <p class="text-xs text-gray-600 mb-2">{{ __('admin.staff.specialties') }}</p>
                     <div class="flex flex-wrap gap-2">
                         @foreach($member->specialties as $specialty)
                             <span class="badge badge-primary">{{ $specialty }}</span>
@@ -64,7 +65,7 @@
             </div>
             @empty
             <div class="col-span-2 text-center py-12">
-                <p class="text-gray-500">No staff members found</p>
+                <p class="text-gray-500">{{ __('admin.staff.none') }}</p>
             </div>
             @endforelse
         </div>
@@ -75,3 +76,4 @@
     </section>
 </div>
 @endsection
+

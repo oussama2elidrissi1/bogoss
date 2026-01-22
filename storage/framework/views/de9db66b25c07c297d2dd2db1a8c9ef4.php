@@ -50,7 +50,7 @@
 
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <?php
-            $upcomingBookings = $bookings->filter(fn ($b) => $b->date >= now()->toDateString() && $b->status === 'confirmed');
+            $upcomingBookings = $bookings->filter(fn ($b) => $b->date >= now()->toDateString());
             $clientProfile = $client;
         ?>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

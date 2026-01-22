@@ -19,7 +19,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Total Revenue</p>
-                        <p class="text-2xl font-bold text-gray-900">${{ number_format($totalRevenue, 2) }}</p>
+                        <p class="text-2xl font-bold text-gray-900">MAD {{ number_format($totalRevenue, 2) }}</p>
                     </div>
                     <div class="bg-green-50 p-3 rounded-lg">💰</div>
                 </div>
@@ -55,7 +55,7 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm text-gray-600 mb-1">Average Booking</p>
-                        <p class="text-2xl font-bold text-gray-900">${{ number_format($averageBookingValue, 2) }}</p>
+                        <p class="text-2xl font-bold text-gray-900">MAD {{ number_format($averageBookingValue, 2) }}</p>
                     </div>
                     <div class="bg-indigo-50 p-3 rounded-lg">📈</div>
                 </div>
@@ -81,7 +81,7 @@
                                 <p class="font-medium text-gray-900">{{ $booking->service }}</p>
                                 <p class="text-sm text-gray-600">{{ $booking->client_name }}</p>
                             </div>
-                            <div class="text-sm text-gray-600">${{ $booking->price }}</div>
+                            <div class="text-sm text-gray-600">MAD {{ $booking->price }}</div>
                         </div>
                     @empty
                         <p class="text-gray-500 text-center py-8">No recent bookings</p>
@@ -111,3 +111,4 @@
     </section>
 </div>
 @endsection
+
