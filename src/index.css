@@ -30,7 +30,7 @@
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e8f4f8 100%);
+    background: #f6f3ef;
   }
 
   h1, h2, h3, h4, h5, h6 {
