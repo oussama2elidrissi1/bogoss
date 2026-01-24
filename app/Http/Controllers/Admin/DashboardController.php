@@ -20,7 +20,8 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $totalRevenue = Booking::sum('price');
+        // Utiliser 'total' au lieu de 'price' (nouvelle structure)
+        $totalRevenue = Booking::sum('total');
         $totalBookings = Booking::count();
         $totalClients = Client::count();
         $totalServices = Service::count();
@@ -28,7 +29,9 @@ class DashboardController extends Controller
             ->orWhere('status', 'critical')
             ->count();
 
-        $recentBookings = Booking::with(['client', 'service', 'staff'])
+        // Les bookings n'ont plus de relation directe avec service et staff
+        // Ils ont maintenant des items
+        $recentBookings = Booking::with(['client', 'items.service', 'items.staff'])
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get();

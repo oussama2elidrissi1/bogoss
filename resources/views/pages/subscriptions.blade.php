@@ -36,8 +36,20 @@
                         <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">{{ $plan->name }}</h3>
                         <div class="flex items-baseline justify-center space-x-2">
                             <span class="text-5xl font-bold text-primary">MAD {{ $plan->price }}</span>
-                            <span class="text-gray-600">/{{ $plan->duration }}</span>
+                            <span class="text-gray-600">
+                                @if($plan->months)
+                                    /{{ $plan->months }} months
+                                @else
+                                    /{{ $plan->duration }}
+                                @endif
+                            </span>
                         </div>
+                        @if($plan->entries)
+                            <div class="mt-3 inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full font-semibold">
+                                <span>{{ $plan->entries }}</span>
+                                <span>entrées</span>
+                            </div>
+                        @endif
                     </div>
 
                     @php

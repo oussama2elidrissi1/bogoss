@@ -38,6 +38,10 @@ Route::get('/services', [ServicesController::class, 'index'])->name('services');
 Route::get('/packs', [PacksController::class, 'index'])->name('packs');
 Route::get('/booking', [BookingController::class, 'index'])->name('booking');
 Route::post('/booking', [BookingController::class, 'store'])->middleware('auth')->name('booking.store');
+Route::get('/booking-cart', function () {
+    $categories = \App\Models\Service::distinct()->pluck('category');
+    return view('pages.booking-cart', compact('categories'));
+})->middleware('auth')->name('booking.cart');
 Route::get('/subscriptions', [SubscriptionController::class, 'index'])->name('subscriptions');
 Route::post('/subscriptions/{subscription}/subscribe', [SubscriptionController::class, 'subscribe'])
     ->middleware('auth')
@@ -67,6 +71,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('clients', AdminClientController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('services', AdminServiceController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    
+    // Service Options Management
+    Route::get('services/{service}/options', [\App\Http\Controllers\Admin\ServiceOptionController::class, 'index'])->name('services.options.index');
+    Route::get('services/{service}/options/create', [\App\Http\Controllers\Admin\ServiceOptionController::class, 'create'])->name('services.options.create');
+    Route::post('services/{service}/options', [\App\Http\Controllers\Admin\ServiceOptionController::class, 'store'])->name('services.options.store');
+    Route::get('services/{service}/options/{option}/edit', [\App\Http\Controllers\Admin\ServiceOptionController::class, 'edit'])->name('services.options.edit');
+    Route::put('services/{service}/options/{option}', [\App\Http\Controllers\Admin\ServiceOptionController::class, 'update'])->name('services.options.update');
+    Route::delete('services/{service}/options/{option}', [\App\Http\Controllers\Admin\ServiceOptionController::class, 'destroy'])->name('services.options.destroy');
+    
     Route::resource('bookings', AdminBookingController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::resource('staff', AdminStaffController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     Route::get('staff/{staff}/history', [AdminStaffController::class, 'history'])->name('staff.history');

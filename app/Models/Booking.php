@@ -10,56 +10,78 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
+        'booking_reference',
         'client_id',
-        'partner_id',
-        'partner_name',
         'client_name',
-        'service_id',
-        'service',
-        'staff_id',
-        'staff_name',
         'date',
         'time',
-        'duration',
-        'price',
-        'commission_rate',
-        'commission_amount',
-        'staff_payout_percentage',
-        'staff_payout_amount',
+        'subtotal',
+        'discount_total',
+        'total',
+        'total_duration',
         'status',
+        'payment_status',
+        'payment_method',
         'notes',
-        'commission_paid_at',
     ];
 
     protected $casts = [
         'date' => 'date',
-        'duration' => 'integer',
-        'price' => 'decimal:2',
-        'commission_rate' => 'decimal:2',
-        'commission_amount' => 'decimal:2',
-        'staff_payout_percentage' => 'decimal:2',
-        'staff_payout_amount' => 'decimal:2',
-        'commission_paid_at' => 'datetime',
+        'subtotal' => 'decimal:2',
+        'discount_total' => 'decimal:2',
+        'total' => 'decimal:2',
+        'total_duration' => 'integer',
         'created_at' => 'datetime',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Générer une référence unique lors de la création
+        static::creating(function ($booking) {
+            if (empty($booking->booking_reference)) {
+                $booking->booking_reference = 'BK-' . strtoupper(uniqid());
+            }
+        });
+    }
 
     public function client()
     {
         return $this->belongsTo(Client::class);
     }
 
-    public function service()
+    public function items()
     {
-        return $this->belongsTo(Service::class);
+        return $this->hasMany(BookingItem::class);
     }
 
-    public function staff()
+    /**
+     * Calculer les totaux de la réservation
+     */
+    public function calculateTotals(): array
     {
-        return $this->belongsTo(Staff::class);
+        $subtotal = $this->items->sum('subtotal');
+        $discountTotal = $this->items->sum('discount_amount');
+        $total = $this->items->sum('total');
+        $totalDuration = $this->items->sum(function ($item) {
+            return $item->calculateTotalDuration();
+        });
+
+        return [
+            'subtotal' => round($subtotal, 2),
+            'discount_total' => round($discountTotal, 2),
+            'total' => round($total, 2),
+            'total_duration' => $totalDuration,
+        ];
     }
 
-    public function partner()
+    /**
+     * Mettre à jour les totaux de la réservation
+     */
+    public function updateTotals(): void
     {
-        return $this->belongsTo(Partner::class);
+        $totals = $this->calculateTotals();
+        $this->update($totals);
     }
 }

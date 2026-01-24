@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pages;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Client;
+use App\Models\Promotion;
 use App\Models\Service;
 use App\Models\Staff;
 use Carbon\Carbon;
@@ -13,15 +14,62 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
+    private function bestPromotionForService(Service $service, $promotions): array
+    {
+        $best = null;
+        $bestDiscount = 0.0;
+
+        foreach ($promotions as $promotion) {
+            $applicable = is_array($promotion->applicable_services)
+                ? $promotion->applicable_services
+                : json_decode($promotion->applicable_services ?? '[]', true);
+            $applicable = is_array($applicable) ? $applicable : [];
+
+            $isApplicable = false;
+            foreach ($applicable as $x) {
+                if (is_numeric($x) && (int) $x === (int) $service->id) {
+                    $isApplicable = true;
+                    break;
+                }
+                if (is_string($x) && ($x === $service->category || $x === (string) $service->id)) {
+                    $isApplicable = true;
+                    break;
+                }
+            }
+            if (!$isApplicable) {
+                continue;
+            }
+
+            $amount = 0.0;
+            if ($promotion->type === 'percentage') {
+                $amount = ((float) $service->price) * ((float) $promotion->discount) / 100;
+            } else {
+                $amount = (float) $promotion->discount;
+            }
+            $amount = max(0.0, min($amount, (float) $service->price));
+
+            if ($amount > $bestDiscount) {
+                $bestDiscount = $amount;
+                $best = $promotion;
+            }
+        }
+
+        return [
+            'promotion' => $best,
+            'discount_amount' => $bestDiscount,
+        ];
+    }
+
     public function index(Request $request)
     {
         $category = $request->get('category', 'All');
         $serviceId = $request->get('service_id');
+        $serviceIds = $request->input('service_ids', []);
         $date = $request->get('date', now()->toDateString());
 
         $selectedDate = Carbon::parse($date);
 
-        $servicesQuery = Service::query()->where('available', true);
+        $servicesQuery = Service::with('availableOptions')->where('available', true);
         if ($category !== 'All') {
             $servicesQuery->where('category', $category);
         }
@@ -31,8 +79,72 @@ class BookingController extends Controller
 
         $selectedService = null;
         if ($serviceId) {
-            $selectedService = Service::where('available', true)->find($serviceId);
+            $selectedService = Service::with('availableOptions')->where('available', true)->find($serviceId);
         }
+
+        $prefillServices = collect([]);
+        if (is_array($serviceIds) && count($serviceIds) > 0) {
+            $ids = collect($serviceIds)->map(fn ($v) => (int) $v)->filter(fn ($v) => $v > 0)->values();
+            if ($ids->count() > 0) {
+                $prefillServices = Service::query()
+                    ->with('availableOptions')
+                    ->where('available', true)
+                    ->whereIn('id', $ids->all())
+                    ->get()
+                    ->values();
+            }
+        } elseif ($selectedService) {
+            $prefillServices = collect([$selectedService]);
+        }
+
+        $prefillData = $prefillServices
+            ->map(fn (Service $s) => [
+                'id' => (string) $s->id,
+                'name' => $s->name,
+                'price' => (float) $s->price,
+                'duration' => (int) $s->duration,
+            ])
+            ->values();
+
+        $groupDefs = [
+            [
+                'key' => 'hammam',
+                'title' => 'Hammam',
+                'icon' => '🧖‍♂️',
+                'variants' => $services
+                    ->where('category', 'Hammam')
+                    ->filter(fn ($s) => stripos($s->name, 'hammam') !== false)
+                    ->load('availableOptions')
+                    ->values(),
+            ],
+            [
+                'key' => 'massage',
+                'title' => 'Massage',
+                'icon' => '💆‍♂️',
+                'variants' => $services
+                    ->where('category', 'Soins')
+                    ->filter(fn ($s) => stripos($s->name, 'massage') !== false)
+                    ->load('availableOptions')
+                    ->values(),
+            ],
+            [
+                'key' => 'hijama',
+                'title' => 'Hijama',
+                'icon' => '🩺',
+                'variants' => $services
+                    ->where('category', 'Hijama')
+                    ->filter(fn ($s) => stripos($s->name, 'hijama') !== false)
+                    ->load('availableOptions')
+                    ->values(),
+            ],
+        ];
+
+        $variantIds = collect($groupDefs)
+            ->flatMap(fn ($g) => $g['variants']->pluck('id'))
+            ->unique()
+            ->values();
+
+        $catalogServices = $services->whereNotIn('id', $variantIds->all())->values();
 
         $dateBookings = Booking::whereDate('date', $selectedDate)->orderBy('time')->get();
 
@@ -48,8 +160,8 @@ class BookingController extends Controller
             '16:00', '16:30', '17:00', '17:30', '18:00', '18:30',
         ];
 
-        return view('pages.booking', [
-            'services' => $services,
+        return view('pages.booking-new', [
+            'services' => $catalogServices,
             'categories' => $categories,
             'selectedCategory' => $category,
             'selectedService' => $selectedService,
@@ -57,6 +169,9 @@ class BookingController extends Controller
             'dateBookings' => $dateBookings,
             'availableStaff' => $availableStaff,
             'timeSlots' => $timeSlots,
+            'serviceGroups' => $groupDefs,
+            'prefillServices' => $prefillServices,
+            'prefillData' => $prefillData,
         ]);
     }
 
@@ -85,6 +200,13 @@ class BookingController extends Controller
             return back()->withErrors(['service_ids' => 'Some selected services are invalid.']);
         }
 
+        $today = now()->toDateString();
+        $activePromotions = Promotion::query()
+            ->where('status', 'active')
+            ->whereDate('valid_from', '<=', $today)
+            ->whereDate('valid_until', '>=', $today)
+            ->get();
+
         $staff = $request->staff_id ? Staff::find($request->staff_id) : null;
         $user = Auth::user();
         $client = Client::firstOrCreate(
@@ -97,6 +219,12 @@ class BookingController extends Controller
         );
 
         foreach ($services as $service) {
+            $promoCalc = $this->bestPromotionForService($service, $activePromotions);
+            $promotion = $promoCalc['promotion'];
+            $discountAmount = (float) $promoCalc['discount_amount'];
+            $originalPrice = (float) $service->price;
+            $finalPrice = max(0.0, $originalPrice - $discountAmount);
+
             $staffPayoutPercent = 0;
             $staffPayoutAmount = 0;
             if ($staff) {
@@ -105,7 +233,7 @@ class BookingController extends Controller
                     ->first()
                     ?->pivot
                     ?->payout_percentage ?? 0;
-                $staffPayoutAmount = round(($service->price * $staffPayoutPercent) / 100, 2);
+                $staffPayoutAmount = round(($finalPrice * $staffPayoutPercent) / 100, 2);
             }
 
             Booking::create([
@@ -118,7 +246,11 @@ class BookingController extends Controller
                 'date' => $request->date,
                 'time' => $request->time,
                 'duration' => $service->duration,
-                'price' => $service->price,
+                'price' => $finalPrice,
+                'original_price' => $originalPrice,
+                'discount_amount' => $discountAmount,
+                'promotion_id' => $promotion?->id,
+                'promotion_code' => $promotion?->code,
                 'status' => 'pending',
                 'notes' => $request->notes,
                 'staff_payout_percentage' => $staffPayoutPercent,

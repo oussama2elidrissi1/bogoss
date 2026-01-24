@@ -78,7 +78,16 @@
                     <div class="flex justify-between items-start mb-2">
                         <div>
                             <h3 class="font-bold text-gray-900">{{ $booking->client_name }}</h3>
-                            <p class="text-sm text-gray-600">{{ $booking->service }}</p>
+                            <p class="text-sm text-gray-600">
+                                Réf: {{ $booking->booking_reference }} • {{ $booking->items->count() }} service(s)
+                            </p>
+                            @if($booking->items->count() > 0)
+                                <div class="mt-2 space-y-1">
+                                    @foreach($booking->items as $item)
+                                        <p class="text-xs text-gray-500">→ {{ $item->service_name }}</p>
+                                    @endforeach
+                                </div>
+                            @endif
                         </div>
                         <span class="badge {{ $booking->status === 'confirmed' ? 'badge-success' : 'badge-warning' }}">
                             {{ __('admin.status.' . $booking->status) }}
@@ -87,7 +96,8 @@
                     <div class="flex items-center space-x-4 text-sm text-gray-600">
                         <span>📅 {{ $booking->date->format('M d, Y') }}</span>
                         <span>🕐 {{ $booking->time }}</span>
-                        <span>💰 MAD {{ $booking->price }}</span>
+                        <span>💰 MAD {{ number_format($booking->total, 2) }}</span>
+                        <span>⏱️ {{ $booking->total_duration }} min</span>
                     </div>
                 </div>
                 @empty

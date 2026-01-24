@@ -28,8 +28,7 @@
                 <?php else: ?>
                     <a href="<?php echo e(route('home')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'home' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.home')); ?></a>
                     <a href="<?php echo e(route('services')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'services' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.services')); ?></a>
-                    <a href="<?php echo e(route('packs')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'packs' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">Packs</a>
-                    <a href="<?php echo e(route('booking')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'booking' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.book_now')); ?></a>
+                    <a href="<?php echo e(route('packs')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'packs' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">📅 Réserver</a>
                     <a href="<?php echo e(route('subscriptions')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'subscriptions' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>"><?php echo e(__('app.nav.memberships')); ?></a>
                     <a href="<?php echo e(route('partner.info')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'partner.info' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">Partenaire</a>
                     <a href="<?php echo e(route('shop')); ?>" class="text-sm font-medium <?php echo e($currentRoute === 'shop' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary'); ?>">
@@ -103,8 +102,7 @@
                 <?php else: ?>
                     <a href="<?php echo e(route('home')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'home' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.home')); ?></a>
                     <a href="<?php echo e(route('services')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'services' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.services')); ?></a>
-                    <a href="<?php echo e(route('packs')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'packs' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">Packs</a>
-                    <a href="<?php echo e(route('booking')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'booking' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.book_now')); ?></a>
+                    <a href="<?php echo e(route('packs')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'packs' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">📅 Réserver</a>
                     <a href="<?php echo e(route('subscriptions')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'subscriptions' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>"><?php echo e(__('app.nav.memberships')); ?></a>
                     <a href="<?php echo e(route('partner.info')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'partner.info' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">Partenaire</a>
                     <a href="<?php echo e(route('shop')); ?>" class="block px-4 py-2 rounded-lg <?php echo e($currentRoute === 'shop' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100'); ?>">

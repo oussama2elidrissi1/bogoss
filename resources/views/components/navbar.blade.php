@@ -28,8 +28,7 @@
                 @else
                     <a href="{{ route('home') }}" class="text-sm font-medium {{ $currentRoute === 'home' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">{{ __('app.nav.home') }}</a>
                     <a href="{{ route('services') }}" class="text-sm font-medium {{ $currentRoute === 'services' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">{{ __('app.nav.services') }}</a>
-                    <a href="{{ route('packs') }}" class="text-sm font-medium {{ $currentRoute === 'packs' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">Packs</a>
-                    <a href="{{ route('booking') }}" class="text-sm font-medium {{ $currentRoute === 'booking' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">{{ __('app.nav.book_now') }}</a>
+                    <a href="{{ route('packs') }}" class="text-sm font-medium {{ $currentRoute === 'packs' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">📅 Réserver</a>
                     <a href="{{ route('subscriptions') }}" class="text-sm font-medium {{ $currentRoute === 'subscriptions' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">{{ __('app.nav.memberships') }}</a>
                     <a href="{{ route('partner.info') }}" class="text-sm font-medium {{ $currentRoute === 'partner.info' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">Partenaire</a>
                     <a href="{{ route('shop') }}" class="text-sm font-medium {{ $currentRoute === 'shop' ? 'text-primary border-b-2 border-primary' : 'text-gray-700 hover:text-primary' }}">
@@ -100,8 +99,7 @@
                 @else
                     <a href="{{ route('home') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'home' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">{{ __('app.nav.home') }}</a>
                     <a href="{{ route('services') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'services' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">{{ __('app.nav.services') }}</a>
-                    <a href="{{ route('packs') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'packs' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">Packs</a>
-                    <a href="{{ route('booking') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'booking' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">{{ __('app.nav.book_now') }}</a>
+                    <a href="{{ route('packs') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'packs' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">📅 Réserver</a>
                     <a href="{{ route('subscriptions') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'subscriptions' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">{{ __('app.nav.memberships') }}</a>
                     <a href="{{ route('partner.info') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'partner.info' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">Partenaire</a>
                     <a href="{{ route('shop') }}" class="block px-4 py-2 rounded-lg {{ $currentRoute === 'shop' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-gray-100' }}">

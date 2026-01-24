@@ -20,7 +20,8 @@ class BookingController extends Controller
 
     public function index(Request $request)
     {
-        $query = Booking::with(['client', 'service', 'staff']);
+        // Charger les bookings avec leurs items et relations
+        $query = Booking::with(['client', 'items.service', 'items.staff']);
 
         if ($request->has('status') && $request->status !== '') {
             $query->where('status', $request->status);
@@ -39,7 +40,7 @@ class BookingController extends Controller
         $agendaEnd = $agendaStart->copy()->addDays(6);
         $agendaStatus = $request->get('status', '');
 
-        $agendaQuery = Booking::query()
+        $agendaQuery = Booking::with(['items.service', 'items.staff'])
             ->whereBetween('date', [$agendaStart->toDateString(), $agendaEnd->toDateString()]);
 
         if ($agendaStatus !== '') {
@@ -64,7 +65,7 @@ class BookingController extends Controller
         $agendaPrev = $agendaStart->copy()->subDays(7)->toDateString();
         $agendaNext = $agendaStart->copy()->addDays(7)->toDateString();
 
-        $nonAgendaQuery = Booking::query()
+        $nonAgendaQuery = Booking::with(['items.service', 'items.staff'])
             ->whereNotBetween('date', [$agendaStart->toDateString(), $agendaEnd->toDateString()]);
 
         if ($request->has('status') && $request->status !== '') {
@@ -93,42 +94,9 @@ class BookingController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'client_id' => 'required|exists:clients,id',
-            'service_id' => 'required|exists:services,id',
-            'staff_id' => 'nullable|exists:staff,id',
-            'date' => 'required|date',
-            'time' => 'required|string',
-            'notes' => 'nullable|string',
-        ]);
-
-        $service = Service::find($validated['service_id']);
-        $client = Client::find($validated['client_id']);
-
-        $validated['client_name'] = $client->name;
-        $validated['service'] = $service->name;
-        $validated['duration'] = $service->duration;
-        $validated['price'] = $service->price;
-        $validated['status'] = 'confirmed';
-
-        if (!empty($validated['staff_id'])) {
-            $staff = Staff::find($validated['staff_id']);
-            $validated['staff_name'] = $staff->name;
-            $payout = $service->staff()
-                ->where('staff_id', $staff->id)
-                ->first()
-                ?->pivot
-                ?->payout_percentage;
-            $validated['staff_payout_percentage'] = $payout ?? 0;
-            $validated['staff_payout_amount'] = round(($service->price * ($validated['staff_payout_percentage'] ?? 0)) / 100, 2);
-        } else {
-            $validated['staff_payout_percentage'] = null;
-            $validated['staff_payout_amount'] = null;
-        }
-
-        Booking::create($validated);
-
-        return redirect()->route('admin.bookings.index')->with('success', 'Booking created successfully');
+        // TODO: Adapter pour la nouvelle architecture avec BookingService
+        return redirect()->route('admin.bookings.index')
+            ->with('error', 'La création de réservations depuis l\'admin doit être mise à jour pour la nouvelle architecture.');
     }
 
     public function create()
@@ -142,65 +110,15 @@ class BookingController extends Controller
 
     public function update(Request $request, Booking $booking)
     {
+        // Seul le statut peut être mis à jour pour l'instant
         $validated = $request->validate([
-            'client_id' => 'sometimes|exists:clients,id',
-            'service_id' => 'sometimes|exists:services,id',
-            'status' => 'sometimes|string',
-            'date' => 'sometimes|date',
-            'time' => 'sometimes|string',
-            'staff_id' => 'nullable|exists:staff,id',
+            'status' => 'sometimes|string|in:pending,confirmed,cancelled,completed',
             'notes' => 'nullable|string',
         ]);
 
-        if (isset($validated['staff_id'])) {
-            $staff = $validated['staff_id'] ? Staff::find($validated['staff_id']) : null;
-            $validated['staff_name'] = $staff?->name;
-        }
-
-        if ($request->filled('client_id')) {
-            $client = Client::find($request->client_id);
-            if ($client) {
-                $validated['client_id'] = $client->id;
-                $validated['client_name'] = $client->name;
-            }
-        }
-
-        if ($request->filled('service_id')) {
-            $service = Service::find($request->service_id);
-            if ($service) {
-                $validated['service_id'] = $service->id;
-                $validated['service'] = $service->name;
-                $validated['duration'] = $service->duration;
-                $validated['price'] = $service->price;
-            }
-        }
-
-        if (isset($validated['staff_id']) || isset($validated['service_id'])) {
-            $staff = $booking->staff;
-            $service = $booking->service;
-            if (isset($validated['staff_id'])) {
-                $staff = $validated['staff_id'] ? Staff::find($validated['staff_id']) : null;
-            }
-            if (isset($validated['service_id'])) {
-                $service = Service::find($validated['service_id']);
-            }
-            if ($staff && $service) {
-                $payout = $service->staff()
-                    ->where('staff_id', $staff->id)
-                    ->first()
-                    ?->pivot
-                    ?->payout_percentage;
-                $validated['staff_payout_percentage'] = $payout ?? 0;
-                $validated['staff_payout_amount'] = round(($service->price * ($validated['staff_payout_percentage'] ?? 0)) / 100, 2);
-            } else {
-                $validated['staff_payout_percentage'] = null;
-                $validated['staff_payout_amount'] = null;
-            }
-        }
-
         $booking->update($validated);
 
-        return redirect()->route('admin.bookings.index')->with('success', 'Booking updated successfully');
+        return redirect()->route('admin.bookings.index')->with('success', 'Statut de la réservation mis à jour');
     }
 
     public function edit(Booking $booking)

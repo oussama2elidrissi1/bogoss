@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BookingApiController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\ServiceController;
 use App\Http\Controllers\Api\BookingController;
@@ -35,11 +36,21 @@ Route::middleware('auth:sanctum')->group(function () {
     // Clients
     Route::apiResource('clients', ClientController::class);
     
-    // Services
-    Route::apiResource('services', ServiceController::class);
+    // Services with options (NEW BOOKING SYSTEM)
+    Route::get('/services', [BookingApiController::class, 'getServices']);
+    Route::get('/services/{id}', [BookingApiController::class, 'getService']);
     
-    // Bookings
-    Route::apiResource('bookings', BookingController::class);
+    // Services (admin)
+    Route::apiResource('services', ServiceController::class)->except(['index', 'show']);
+    
+    // Bookings (NEW BOOKING SYSTEM)
+    Route::post('/bookings/calculate', [BookingApiController::class, 'calculateCart']);
+    Route::get('/bookings', [BookingApiController::class, 'index']);
+    Route::post('/bookings', [BookingApiController::class, 'store']);
+    Route::get('/bookings/{id}', [BookingApiController::class, 'show']);
+    
+    // Old Bookings (to be deprecated)
+    // Route::apiResource('bookings', BookingController::class);
     
     // Staff
     Route::apiResource('staff', StaffController::class);

@@ -23,6 +23,42 @@
             <div class="lg:col-span-2">
                 <div class="mb-8">
                     <h2 class="font-serif text-2xl font-bold text-gray-900 mb-4"><?php echo e(__('pages.booking.choose_service')); ?></h2>
+
+                    <?php if(!empty($serviceGroups)): ?>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <?php $__currentLoopData = $serviceGroups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <?php
+                                    $variants = ($group['variants'] ?? collect())->map(function ($s) {
+                                        return [
+                                            'id' => $s->id,
+                                            'name' => $s->name,
+                                            'price' => (float) $s->price,
+                                            'duration' => (int) $s->duration,
+                                        ];
+                                    })->values();
+                                ?>
+                                <?php if($variants->count() > 0): ?>
+                                    <div class="glass-card p-5">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="font-serif text-xl font-bold text-gray-900"><?php echo e($group['title']); ?></div>
+                                            <div class="text-2xl"><?php echo e($group['icon'] ?? '✨'); ?></div>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mb-4">Choisissez le type après (classic/royal, durée, options...).</p>
+                                        <button
+                                            type="button"
+                                            class="btn-primary w-full js-book-group"
+                                            data-group-title="<?php echo e($group['title']); ?>"
+                                            data-variants='<?php echo json_encode($variants, 15, 512) ?>'
+                                        >
+                                            Choisir <?php echo e($group['title']); ?>
+
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    <?php endif; ?>
+
                     <div class="flex flex-wrap gap-3 mb-6">
                         <a href="<?php echo e(route('booking', ['category' => 'All', 'date' => $selectedDate->toDateString(), 'service_id' => optional($selectedService)->id])); ?>" class="px-6 py-2 rounded-full font-medium transition-all duration-300 <?php echo e($selectedCategory === 'All' ? 'bg-primary text-white shadow-lg scale-105' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'); ?>"><?php echo e(__('pages.common.all')); ?></a>
                         <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -196,6 +232,21 @@
             <h3 class="font-serif text-2xl font-bold text-gray-900"><?php echo e(__('pages.booking.modal_title')); ?></h3>
             <button type="button" class="text-gray-500 hover:text-gray-700" data-close-modal>✕</button>
         </div>
+
+        <div id="group-variant-panel" class="hidden border border-gray-200 rounded-xl p-4 bg-white mb-4">
+            <div class="flex items-center justify-between mb-3">
+                <h4 class="font-serif text-lg font-bold text-gray-900" id="group-variant-title">Choose type</h4>
+                <button type="button" class="text-gray-500 hover:text-gray-700" id="close-group-variant">✕</button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="sm:col-span-2">
+                    <select id="group-variant-select" class="input-field"></select>
+                </div>
+                <button type="button" class="btn-primary" id="group-variant-add">Add</button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Vous sélectionnez d’abord le service, puis le type (classic/royal, durée...).</p>
+        </div>
+
         <div class="bg-gray-50 rounded-xl p-4 mb-6">
             <p class="text-sm text-gray-500"><?php echo e(__('pages.booking.selected_services')); ?></p>
             <div class="space-y-2" id="booking-service-list">
@@ -305,6 +356,7 @@
     const authModal = document.getElementById('auth-modal');
     const bookingModal = document.getElementById('booking-modal');
     const serviceButtons = document.querySelectorAll('.js-book-service');
+    const groupButtons = document.querySelectorAll('.js-book-group');
     const closeButtons = document.querySelectorAll('[data-close-modal]');
     const loginPanel = document.getElementById('auth-login-panel');
     const registerPanel = document.getElementById('auth-register-panel');
@@ -319,6 +371,14 @@
     const serviceFilterInput = document.getElementById('service-filter-input');
     const serviceFilterCategory = document.getElementById('service-filter-category');
     const selectedServices = new Map();
+    const prefill = <?php echo json_encode($prefillData ?? [], 15, 512) ?>;
+
+    const groupVariantPanel = document.getElementById('group-variant-panel');
+    const groupVariantTitle = document.getElementById('group-variant-title');
+    const groupVariantSelect = document.getElementById('group-variant-select');
+    const groupVariantAdd = document.getElementById('group-variant-add');
+    const closeGroupVariant = document.getElementById('close-group-variant');
+    let activeGroupVariants = [];
     const labels = {
       noServiceSelected: <?php echo json_encode(__('pages.booking.no_selected_services'), 15, 512) ?>,
       remove: <?php echo json_encode(__('pages.common.remove'), 15, 512) ?>,
@@ -400,6 +460,49 @@
       });
     };
 
+    const showGroupVariants = (title, variants) => {
+      if (!groupVariantPanel || !groupVariantSelect || !groupVariantTitle) return;
+      activeGroupVariants = Array.isArray(variants) ? variants : [];
+      groupVariantTitle.textContent = `${title}: choisir le type`;
+      groupVariantSelect.innerHTML = '';
+      activeGroupVariants.forEach((v) => {
+        const opt = document.createElement('option');
+        opt.value = String(v.id);
+        opt.textContent = `${v.name} • MAD ${Number(v.price).toFixed(2)} • ${v.duration} ${labels.minutes}`;
+        groupVariantSelect.appendChild(opt);
+      });
+      groupVariantPanel.classList.remove('hidden');
+    };
+
+    const hideGroupVariants = () => {
+      if (!groupVariantPanel) return;
+      groupVariantPanel.classList.add('hidden');
+      activeGroupVariants = [];
+      if (groupVariantSelect) groupVariantSelect.innerHTML = '';
+    };
+
+    if (closeGroupVariant) {
+      closeGroupVariant.addEventListener('click', hideGroupVariants);
+    }
+
+    if (groupVariantAdd) {
+      groupVariantAdd.addEventListener('click', () => {
+        const id = groupVariantSelect?.value;
+        if (!id) return;
+        const v = activeGroupVariants.find((x) => String(x.id) === String(id));
+        if (!v) return;
+        selectedServices.clear();
+        selectedServices.set(String(v.id), {
+          id: String(v.id),
+          name: v.name || '',
+          price: `MAD ${Number(v.price).toFixed(2)}`,
+          duration: `${v.duration} ${labels.minutes}`,
+        });
+        renderSelected();
+        hideGroupVariants();
+      });
+    }
+
     if (addServiceBtn && servicePanel) {
       addServiceBtn.addEventListener('click', () => {
         servicePanel.classList.toggle('hidden');
@@ -479,6 +582,44 @@
         }
       });
     });
+
+    groupButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const title = btn.dataset.groupTitle || 'Service';
+        let variants = [];
+        try {
+          variants = JSON.parse(btn.dataset.variants || '[]');
+        } catch (e) {
+          variants = [];
+        }
+        if (isAuth) {
+          openModal(bookingModal);
+          showGroupVariants(title, variants);
+        } else {
+          setAuthTab('login');
+          openModal(authModal);
+        }
+      });
+    });
+
+    // Prefill from packs (service_ids[])
+    if (Array.isArray(prefill) && prefill.length) {
+      prefill.forEach((s) => {
+        const id = String(s.id);
+        selectedServices.set(id, {
+          id,
+          name: s.name || '',
+          price: s.price != null ? `MAD ${Number(s.price).toFixed(2)}` : '',
+          duration: s.duration != null ? `${Number(s.duration)} ${labels.minutes}` : '',
+        });
+      });
+      renderSelected();
+      if (isAuth) openModal(bookingModal);
+      else {
+        setAuthTab('login');
+        openModal(authModal);
+      }
+    }
   })();
 </script>
 <?php $__env->stopPush(); ?>

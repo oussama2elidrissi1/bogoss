@@ -30,6 +30,31 @@ class Service extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function bookingItems()
+    {
+        return $this->hasMany(BookingItem::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(ServiceOption::class)->orderBy('sort_order');
+    }
+
+    public function availableOptions()
+    {
+        return $this->hasMany(ServiceOption::class)
+            ->where('available', true)
+            ->orderBy('sort_order');
+    }
+
+    public function requiredOptions()
+    {
+        return $this->hasMany(ServiceOption::class)
+            ->where('is_required', true)
+            ->where('available', true)
+            ->orderBy('sort_order');
+    }
+
     public function staff()
     {
         return $this->belongsToMany(Staff::class, 'service_staff')

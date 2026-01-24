@@ -72,17 +72,20 @@
                                         data-booking="<?php echo e(json_encode([
                                             'id' => $booking->id,
                                             'client_id' => $booking->client_id,
-                                            'service_id' => $booking->service_id,
-                                            'staff_id' => $booking->staff_id,
-                                            'service' => $booking->service,
+                                            'reference' => $booking->booking_reference,
                                             'client' => $booking->client_name,
-                                            'staff' => $booking->staff_name,
                                             'date' => $booking->date->toDateString(),
                                             'time' => $booking->time,
-                                            'duration' => $booking->duration,
-                                            'price' => $booking->price,
+                                            'total_duration' => $booking->total_duration,
+                                            'total' => $booking->total,
                                             'status' => $booking->status,
                                             'notes' => $booking->notes,
+                                            'items' => $booking->items->map(fn($item) => [
+                                                'service_name' => $item->service_name,
+                                                'staff_name' => $item->staff_name,
+                                                'duration' => $item->duration,
+                                                'total' => $item->total,
+                                            ]),
                                         ])); ?>"
                                     >
                                         <div class="flex justify-between items-center text-sm">
@@ -92,8 +95,12 @@
 
                                             </span>
                                         </div>
-                                        <div class="text-xs text-gray-600 mt-1"><?php echo e($booking->service); ?></div>
+                                        <div class="text-xs text-gray-600 mt-1">
+                                            <?php echo e($booking->items->pluck('service_name')->join(', ')); ?>
+
+                                        </div>
                                         <div class="text-xs text-gray-500">Client: <?php echo e($booking->client_name); ?></div>
+                                        <div class="text-xs text-gray-400">Réf: <?php echo e($booking->booking_reference); ?></div>
                                     </div>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
@@ -111,8 +118,16 @@
             <div class="glass-card p-6">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h3 class="font-serif text-xl font-bold text-gray-900"><?php echo e($booking->service); ?></h3>
+                        <h3 class="font-serif text-xl font-bold text-gray-900">
+                            Réf: <?php echo e($booking->booking_reference); ?>
+
+                        </h3>
                         <p class="text-sm text-gray-600">Client: <?php echo e($booking->client_name); ?></p>
+                        <div class="mt-2 space-y-1">
+                            <?php $__currentLoopData = $booking->items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <p class="text-xs text-gray-500">→ <?php echo e($item->service_name); ?></p>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
                     </div>
                     <span class="badge <?php echo e($booking->status === 'confirmed' ? 'badge-success' : ($booking->status === 'pending' ? 'badge-warning' : 'badge-error')); ?>">
                         <?php echo e($booking->status); ?>
@@ -121,15 +136,10 @@
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
                     <div>📅 <?php echo e($booking->date->format('M d, Y')); ?></div>
-                    <div>🕐 <?php echo e($booking->time); ?> (<?php echo e($booking->duration); ?> min)</div>
-                    <div>👤 <?php echo e($booking->staff_name ?? 'Any Available'); ?></div>
-                    <div>💰 MAD <?php echo e($booking->price); ?></div>
+                    <div>🕐 <?php echo e($booking->time); ?> (<?php echo e($booking->total_duration); ?> min)</div>
+                    <div>🎫 <?php echo e($booking->items->count()); ?> service(s)</div>
+                    <div>💰 MAD <?php echo e(number_format($booking->total, 2)); ?></div>
                 </div>
-                <?php if($booking->staff_payout_percentage): ?>
-                    <div class="text-xs text-gray-500 mb-4">
-                        Staff payout: <?php echo e($booking->staff_payout_percentage); ?>% (<?php echo e(number_format($booking->staff_payout_amount, 2)); ?>)
-                    </div>
-                <?php endif; ?>
                 <div class="flex space-x-2">
                     <button
                         type="button"
@@ -137,18 +147,27 @@
                         data-booking="<?php echo e(json_encode([
                             'id' => $booking->id,
                             'client_id' => $booking->client_id,
-                            'service_id' => $booking->service_id,
-                            'staff_id' => $booking->staff_id,
-                            'service' => $booking->service,
+                            'reference' => $booking->booking_reference,
                             'client' => $booking->client_name,
-                            'staff' => $booking->staff_name,
                             'date' => $booking->date->toDateString(),
                             'time' => $booking->time,
-                            'duration' => $booking->duration,
-                            'price' => $booking->price,
+                            'total_duration' => $booking->total_duration,
+                            'total' => $booking->total,
                             'status' => $booking->status,
                             'notes' => $booking->notes,
+                            'items' => $booking->items->map(fn($item) => [
+                                'service_name' => $item->service_name,
+                                'staff_name' => $item->staff_name,
+                                'duration' => $item->duration,
+                                'total' => $item->total,
+                            ]),
                         ])); ?>"
+                    >
+                        View Details
+                    </button>
+                            'status' => $booking->status,
+                            'notes' => $booking->notes,
+                        ]) }}"
                     >
                         View / Edit
                     </button>
@@ -184,79 +203,57 @@
             </div>
 
             <div class="bg-gray-50 rounded-xl p-4 mb-6 text-sm">
-                <div class="flex items-center justify-between">
+                <div class="flex items-center justify-between mb-3">
                     <div>
-                        <p class="text-gray-500">Service</p>
-                        <p class="font-semibold text-gray-900" id="modal-service"></p>
+                        <p class="text-gray-500">Référence</p>
+                        <p class="font-semibold text-gray-900" id="modal-reference"></p>
                     </div>
                     <span class="badge badge-warning" id="modal-status"></span>
                 </div>
-                <div class="grid grid-cols-2 gap-3 mt-4 text-gray-600">
-                    <div>Client: <span class="text-gray-900" id="modal-client"></span></div>
-                    <div>Staff: <span class="text-gray-900" id="modal-staff"></span></div>
-                    <div>Date: <span class="text-gray-900" id="modal-date"></span></div>
-                    <div>Time: <span class="text-gray-900" id="modal-time"></span></div>
-                    <div>Duration: <span class="text-gray-900" id="modal-duration"></span> min</div>
-                    <div>Price: <span class="text-gray-900">MAD </span><span id="modal-price"></span></div>
+                
+                <div class="grid grid-cols-2 gap-3 mb-4 text-gray-600">
+                    <div>Client: <span class="text-gray-900 font-medium" id="modal-client"></span></div>
+                    <div>Date: <span class="text-gray-900 font-medium" id="modal-date"></span></div>
+                    <div>Heure: <span class="text-gray-900 font-medium" id="modal-time"></span></div>
+                    <div>Durée totale: <span class="text-gray-900 font-medium" id="modal-total-duration"></span> min</div>
                 </div>
-                <div class="mt-3 text-gray-600">
-                    Notes: <span class="text-gray-900" id="modal-notes"></span>
+
+                <!-- Liste des services -->
+                <div class="border-t border-gray-200 pt-3 mb-3">
+                    <p class="text-gray-700 font-semibold mb-2">Services réservés:</p>
+                    <div id="modal-items-list" class="space-y-2">
+                        <!-- Items chargés dynamiquement -->
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="border-t border-gray-200 pt-3 flex items-center justify-between">
+                    <span class="text-gray-700 font-semibold">Total à payer</span>
+                    <span class="text-lg font-bold text-primary">MAD <span id="modal-total"></span></span>
+                </div>
+
+                <div class="mt-3 text-gray-600 text-sm" id="modal-notes-container">
+                    <span class="font-medium">Notes:</span> <span class="text-gray-900" id="modal-notes"></span>
                 </div>
             </div>
 
             <form method="POST" id="modal-edit-form" class="space-y-4">
                 <?php echo csrf_field(); ?>
                 <?php echo method_field('PUT'); ?>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Client</label>
-                        <select name="client_id" class="input-field">
-                            <?php $__currentLoopData = $clients; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $client): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($client->id); ?>"><?php echo e($client->name); ?> (<?php echo e($client->email); ?>)</option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Service</label>
-                        <select name="service_id" class="input-field">
-                            <?php $__currentLoopData = $services; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $service): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($service->id); ?>"><?php echo e($service->name); ?></option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                        <input type="date" name="date" class="input-field" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                        <input type="time" name="time" class="input-field" required>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Staff</label>
-                    <select name="staff_id" class="input-field">
-                        <option value="">Any Available</option>
-                        <?php $__currentLoopData = $staff; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $member): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <option value="<?php echo e($member->id); ?>"><?php echo e($member->name); ?></option>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                    </select>
-                </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
                     <select name="status" class="input-field">
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
                         <option value="cancelled">Cancelled</option>
+                        <option value="completed">Completed</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Notes</label>
-                    <textarea name="notes" rows="3" class="input-field"></textarea>
+                    <textarea name="notes" rows="3" class="input-field" placeholder="Notes administratives..."></textarea>
                 </div>
-                <button type="submit" class="btn-primary w-full">Update Booking</button>
+                <button type="submit" class="btn-primary w-full">Update Status & Notes</button>
             </form>
         </div>
     </div>
@@ -293,31 +290,56 @@
         const data = card.dataset.booking ? JSON.parse(card.dataset.booking) : null;
         if (!data || !form) return;
 
-        document.getElementById('modal-service').textContent = data.service || '-';
+        // Afficher la référence et les infos de base
+        document.getElementById('modal-reference').textContent = data.reference || '-';
         document.getElementById('modal-client').textContent = data.client || '-';
-        document.getElementById('modal-staff').textContent = data.staff || 'Any Available';
         document.getElementById('modal-date').textContent = data.date || '-';
         document.getElementById('modal-time').textContent = data.time || '-';
-        document.getElementById('modal-duration').textContent = data.duration || '-';
-        document.getElementById('modal-price').textContent = data.price || '-';
-        document.getElementById('modal-notes').textContent = data.notes || '-';
+        document.getElementById('modal-total-duration').textContent = data.total_duration || '-';
+        document.getElementById('modal-total').textContent = parseFloat(data.total || 0).toFixed(2);
+        
+        const notesText = data.notes || 'Aucune note';
+        document.getElementById('modal-notes').textContent = notesText;
+        if (!data.notes) {
+          document.getElementById('modal-notes-container').classList.add('text-gray-400');
+        } else {
+          document.getElementById('modal-notes-container').classList.remove('text-gray-400');
+        }
 
+        // Afficher le statut
         const statusEl = document.getElementById('modal-status');
         statusEl.textContent = data.status || 'pending';
         setBadgeClass(statusEl, data.status);
 
+        // Afficher la liste des services (items)
+        const itemsList = document.getElementById('modal-items-list');
+        itemsList.innerHTML = '';
+        
+        if (data.items && data.items.length > 0) {
+          data.items.forEach((item, index) => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'bg-white rounded-lg p-3 border border-gray-200';
+            itemDiv.innerHTML = `
+              <div class="flex items-start justify-between mb-2">
+                <div class="flex-1">
+                  <p class="font-semibold text-gray-900">${index + 1}. ${item.service_name}</p>
+                  <p class="text-xs text-gray-600 mt-1">
+                    👤 ${item.staff_name || 'Non assigné'} • ⏱️ ${item.duration} min
+                  </p>
+                </div>
+                <div class="text-right">
+                  <p class="font-bold text-gray-900">MAD ${parseFloat(item.total).toFixed(2)}</p>
+                </div>
+              </div>
+            `;
+            itemsList.appendChild(itemDiv);
+          });
+        } else {
+          itemsList.innerHTML = '<p class="text-sm text-gray-500 italic">Aucun service trouvé</p>';
+        }
+
+        // Préremplir le formulaire
         form.action = `<?php echo e(url('admin/bookings')); ?>/${data.id}`;
-        if (form.querySelector('select[name="client_id"]')) {
-          form.querySelector('select[name="client_id"]').value = data.client_id || '';
-        }
-        if (form.querySelector('select[name="service_id"]')) {
-          form.querySelector('select[name="service_id"]').value = data.service_id || '';
-        }
-        form.querySelector('input[name="date"]').value = data.date || '';
-        form.querySelector('input[name="time"]').value = data.time || '';
-        if (form.querySelector('select[name="staff_id"]')) {
-          form.querySelector('select[name="staff_id"]').value = data.staff_id || '';
-        }
         form.querySelector('select[name="status"]').value = data.status || 'pending';
         form.querySelector('textarea[name="notes"]').value = data.notes || '';
 

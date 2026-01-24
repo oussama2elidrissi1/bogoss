@@ -1,0 +1,199 @@
+# Test de l'API de réservation
+# Utilisez ces requêtes avec Postman, Insomnia, ou curl
+
+### Variables
+@baseUrl = http://localhost:8000/api
+@token = YOUR_AUTH_TOKEN_HERE
+
+### 1. Récupérer tous les services avec options
+GET {{baseUrl}}/services
+Authorization: Bearer {{token}}
+
+###
+
+### 2. Récupérer un service spécifique
+GET {{baseUrl}}/services/1
+Authorization: Bearer {{token}}
+
+###
+
+### 3. Filtrer les services par catégorie
+GET {{baseUrl}}/services?category=Hammam
+Authorization: Bearer {{token}}
+
+###
+
+### 4. Rechercher des services
+GET {{baseUrl}}/services?search=massage
+Authorization: Bearer {{token}}
+
+###
+
+### 5. Calculer le total d'un panier (PREVIEW)
+POST {{baseUrl}}/bookings/calculate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "service_id": 1,
+      "quantity": 1,
+      "options": [
+        {
+          "option_id": 1,
+          "quantity": 1
+        },
+        {
+          "option_id": 2,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "service_id": 2,
+      "quantity": 1,
+      "options": [
+        {
+          "option_id": 4,
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}
+
+###
+
+### 6. Créer une réservation complète
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2026-02-01",
+  "time": "14:00",
+  "notes": "Première visite, préférence pour un praticien expérimenté",
+  "items": [
+    {
+      "service_id": 1,
+      "staff_id": 1,
+      "quantity": 1,
+      "notes": "Éviter les zones sensibles du dos",
+      "options": [
+        {
+          "option_id": 1,
+          "quantity": 1
+        },
+        {
+          "option_id": 2,
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "service_id": 2,
+      "staff_id": 2,
+      "quantity": 1,
+      "options": [
+        {
+          "option_id": 4,
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}
+
+###
+
+### 7. Récupérer une réservation par ID
+GET {{baseUrl}}/bookings/1
+Authorization: Bearer {{token}}
+
+###
+
+### 8. Récupérer une réservation par référence
+GET {{baseUrl}}/bookings/BK-65ABC123
+Authorization: Bearer {{token}}
+
+###
+
+### 9. Lister toutes les réservations du client
+GET {{baseUrl}}/bookings
+Authorization: Bearer {{token}}
+
+###
+
+### 10. Lister les réservations (page 2)
+GET {{baseUrl}}/bookings?page=2
+Authorization: Bearer {{token}}
+
+###
+
+### 11. Créer une réservation simple (1 service, 0 option)
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2026-02-05",
+  "time": "10:00",
+  "items": [
+    {
+      "service_id": 3,
+      "staff_id": 1,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+### 12. Créer une réservation avec quantité multiple
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "date": "2026-02-10",
+  "time": "15:00",
+  "notes": "Réservation pour couple",
+  "items": [
+    {
+      "service_id": 1,
+      "staff_id": 1,
+      "quantity": 2,
+      "options": [
+        {
+          "option_id": 1,
+          "quantity": 2
+        }
+      ]
+    }
+  ]
+}
+
+###
+
+### 13. Test d'erreur: option invalide pour le service
+POST {{baseUrl}}/bookings/calculate
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "service_id": 1,
+      "quantity": 1,
+      "options": [
+        {
+          "option_id": 999,
+          "quantity": 1
+        }
+      ]
+    }
+  ]
+}
+
+###

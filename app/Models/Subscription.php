@@ -13,6 +13,8 @@ class Subscription extends Model
         'name',
         'price',
         'duration',
+        'months',
+        'entries',
         'benefits',
         'color',
         'popular',
@@ -20,6 +22,8 @@ class Subscription extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'months' => 'integer',
+        'entries' => 'integer',
         'benefits' => 'array',
         'popular' => 'boolean',
     ];
