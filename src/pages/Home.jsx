@@ -1,188 +1,278 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { Sparkles, Users, Award, Clock } from 'lucide-react'
-import ServiceCard from '../components/ServiceCard'
+import { Star, Sparkles, ShieldCheck, Award, CheckCircle2 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { useState } from 'react'
-import BookingModal from '../components/BookingModal'
 
 const Home = () => {
   const { servicesData } = useApp()
-  const [selectedService, setSelectedService] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const featuredServices = servicesData.slice(0, 6)
+  const heroImage =
+    'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=2000&q=80'
+  const servicesBackground =
+    'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=2000&q=80'
+  const trustBackground =
+    'https://images.unsplash.com/photo-1506354666786-959d6d497f1a?auto=format&fit=crop&w=2000&q=80'
 
   const features = [
     {
-      icon: Sparkles,
-      title: 'Premium Services',
-      description: 'Experience luxury wellness treatments with traditional techniques'
+      icon: Star,
+      title: '+3500 clients satisfaits',
+      description: 'Une clientèle masculine conquise et fidèle.'
     },
     {
-      icon: Users,
-      title: 'Expert Staff',
-      description: 'Certified professionals dedicated to your wellbeing'
+      icon: Sparkles,
+      title: 'Expertise et soins premium',
+      description: 'Barbiers et masseurs professionnels et expérimentés.'
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Hygiène & discrétion',
+      description: 'Un cadre propre, chic et confidentiel.'
     },
     {
       icon: Award,
-      title: 'Quality Products',
-      description: 'Only the finest organic and natural products'
-    },
-    {
-      icon: Clock,
-      title: 'Flexible Hours',
-      description: 'Open 7 days a week to fit your schedule'
+      title: 'Résultats visibles',
+      description: 'Des soins efficaces dès la première séance.'
     }
   ]
 
-  const handleBookService = (service) => {
-    setSelectedService(service)
-    setIsModalOpen(true)
-  }
+  const services = servicesData.length
+    ? servicesData.slice(0, 3).map(service => ({
+        title: service.name,
+        description: service.description,
+        image: service.image
+      }))
+    : [
+        {
+          title: 'Hammam & Sauna',
+          description: 'Rituels vapeur, détente profonde et purification.',
+          image:
+            'https://images.unsplash.com/photo-1507652313519-d4e9174996dd?auto=format&fit=crop&w=1200&q=80'
+        },
+        {
+          title: 'Coupe & Barbering',
+          description: 'Tailles précises, barbe sculptée, style élégant.',
+          image:
+            'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=80'
+        },
+        {
+          title: 'Massage Relaxant',
+          description: 'Massage signature pour relâcher les tensions.',
+          image:
+            'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80'
+        }
+      ]
+
+  const testimonials = [
+    {
+      name: 'Ahmed H.',
+      rating: 5,
+      comment:
+        "L'endroit parfait pour se détendre entre hommes. Hammam incroyable et coupe de cheveux, au top."
+    },
+    {
+      name: 'Imad R.',
+      rating: 5,
+      comment:
+        'Un vrai temple de la relaxation masculine. Pro, propre et service haut de gamme.'
+    }
+  ]
 
   return (
-    <div className="min-h-screen">
-      <section className="relative h-[600px] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 gradient-wellness opacity-90" />
-        <div 
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=1920)' }}
-        />
+    <div className="min-h-screen bg-[#f6f3ef] text-gray-900">
+      <section className="relative min-h-[560px] flex items-center overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${heroImage})` }} />
+        <div className="absolute inset-0 bg-black/55" />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="relative z-10 text-center text-white px-4 max-w-4xl"
+          className="relative z-10 max-w-5xl px-6 lg:px-12"
         >
-          <h1 className="font-serif text-5xl md:text-6xl font-bold mb-6 text-shadow-lg">
-            Welcome to Bogos Land
+          <p className="text-sm uppercase tracking-[0.4em] text-white/80 mb-4">Bogos Land</p>
+          <h1 className="font-serif text-4xl md:text-6xl font-semibold text-white mb-5">
+            Bogos Land Homme
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-shadow">
-            Your Sanctuary for Wellness, Beauty & Relaxation
+          <p className="text-lg md:text-2xl text-white/85 mb-8 max-w-2xl">
+            Bien-être, grooming & détente dédiés aux hommes.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/booking" className="btn-primary text-lg px-8 py-4">
-              Book Appointment
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Link
+              to="/booking"
+              className="bg-[#c89255] text-white px-7 py-3 rounded-xl font-semibold shadow-lg hover:bg-[#b78147]"
+            >
+              Réserver maintenant
             </Link>
-            <Link to="/services" className="btn-outline bg-white/20 backdrop-blur-sm border-white text-white hover:bg-white hover:text-primary text-lg px-8 py-4">
-              Explore Services
+            <Link
+              to="/services"
+              className="bg-gray-900/80 text-white px-7 py-3 rounded-xl font-semibold hover:bg-gray-900"
+            >
+              Découvrir les services
             </Link>
           </div>
         </motion.div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">
-            Why Choose Bogos Land?
-          </h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Experience the perfect blend of traditional wellness practices and modern luxury
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          {features.map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="glass-card p-6 text-center"
-            >
-              <div className="w-16 h-16 gradient-wellness rounded-full flex items-center justify-center mx-auto mb-4">
-                <feature.icon size={28} className="text-white" />
-              </div>
-              <h3 className="font-serif text-xl font-bold text-gray-900 mb-2">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 text-sm">
-                {feature.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      <section className="bg-gradient-to-b from-white to-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="font-serif text-4xl font-bold text-gray-900 mb-4">
-              Featured Services
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold text-gray-900 mb-4">
+              Pourquoi choisir Bogos Land ?
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Discover our most popular wellness and beauty treatments
+              L&apos;expérience bien-être dédiée aux hommes à Tanger.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredServices.map((service, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => (
               <motion.div
-                key={service.id}
+                key={feature.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
+                className="bg-white rounded-2xl shadow-lg border border-white/60 p-6 text-center"
               >
-                <ServiceCard 
-                  service={service} 
-                  onBook={handleBookService}
-                />
+                <div className="w-14 h-14 bg-[#c89255] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <feature.icon size={24} className="text-white" />
+                </div>
+                <h3 className="font-serif text-lg font-semibold text-gray-900 mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600 text-sm">{feature.description}</p>
               </motion.div>
             ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link to="/services" className="btn-primary text-lg px-8 py-4">
-              View All Services
-            </Link>
           </div>
         </div>
       </section>
 
-      <section className="gradient-wellness py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${servicesBackground})` }}
+        />
+        <div className="absolute inset-0 bg-gray-900/75" />
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center text-white"
+            className="text-center text-white mb-12"
           >
-            <h2 className="font-serif text-4xl font-bold mb-6">
-              Ready to Begin Your Wellness Journey?
-            </h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto">
-              Join our community and experience the transformative power of holistic wellness
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/subscriptions" className="btn-accent text-lg px-8 py-4">
-                View Membership Plans
-              </Link>
-              <Link to="/booking" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-lg font-medium text-lg transition-all duration-300">
-                Book Your First Session
-              </Link>
+            <p className="uppercase tracking-[0.3em] text-white/60 text-xs mb-3">Sélection prestige</p>
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-2">Nos Services</h2>
+            <div className="flex justify-center items-center gap-2 text-[#c89255]">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} size={16} fill="currentColor" />
+              ))}
+              <span className="text-white/70 text-xs">Service premium</span>
             </div>
           </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {services.map(service => (
+              <div key={service.title} className="rounded-2xl overflow-hidden bg-white/10 border border-white/10">
+                <div
+                  className="h-44 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${service.image})` }}
+                />
+                <div className="p-5 text-white">
+                  <h3 className="font-serif text-xl font-semibold mb-2">{service.title}</h3>
+                  <p className="text-sm text-white/70 mb-4">
+                    {service.description || 'Une expérience signée Bogos Land, pensée pour vous.'}
+                  </p>
+                  <Link
+                    to="/services"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-[#c89255] hover:text-white"
+                  >
+                    Découvrir
+                    <CheckCircle2 size={16} />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-center gap-3 mt-10 text-white/60">
+            <button className="w-9 h-9 rounded-full border border-white/30 hover:border-white/60">
+              ‹
+            </button>
+            <div className="flex items-center gap-2">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <span
+                  key={index}
+                  className={`h-2 w-2 rounded-full ${index === 1 ? 'bg-[#c89255]' : 'bg-white/30'}`}
+                />
+              ))}
+            </div>
+            <button className="w-9 h-9 rounded-full border border-white/30 hover:border-white/60">
+              ›
+            </button>
+          </div>
         </div>
       </section>
 
-      <BookingModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        service={selectedService}
-      />
+      <section className="relative py-16">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(${trustBackground})` }}
+        />
+        <div className="absolute inset-0 bg-gray-900/80" />
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-white">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <h2 className="font-serif text-3xl md:text-4xl font-semibold mb-4">
+              Ils nous font confiance
+            </h2>
+            <div className="flex justify-center items-center gap-2 text-[#c89255]">
+              {Array.from({ length: 5 }).map((_, index) => (
+                <Star key={index} size={18} fill="currentColor" />
+              ))}
+              <span className="text-white/70 text-sm">4.9 · 350+ avis</span>
+            </div>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {testimonials.map(testimonial => (
+              <div key={testimonial.name} className="bg-white/10 border border-white/10 rounded-2xl p-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-full bg-[#c89255] flex items-center justify-center text-gray-900 font-semibold">
+                    {testimonial.name[0]}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{testimonial.name}</p>
+                    <div className="flex items-center gap-1 text-[#c89255]">
+                      {Array.from({ length: testimonial.rating }).map((_, index) => (
+                        <Star key={index} size={14} fill="currentColor" />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm text-white/80">{testimonial.comment}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-center mt-8">
+            <Link
+              to="/client-dashboard"
+              className="bg-[#c89255] text-gray-900 px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#d7a26a]"
+            >
+              Voir tous les avis
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
